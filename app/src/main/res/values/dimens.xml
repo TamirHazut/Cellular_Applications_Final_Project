@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="title_text_size">@dimen/_30sdp</dimen>
+    <dimen name="button_text_size">@dimen/_12sdp</dimen>
+</resources>
+<!--
+All dimen configuration were taken from:
+https://github.com/kami-mehar38/MediumContent
+-->

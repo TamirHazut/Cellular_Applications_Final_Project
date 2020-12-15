@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Let`s Plan</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_signup">Sign up</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+    <string name="fullname">Full name</string>
+    <string name="phonenumber">Phone number</string>
+    <string name="password">Password</string>
+</resources>

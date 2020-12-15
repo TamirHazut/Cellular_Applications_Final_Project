@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layoutDirection="ltr"
+    tools:context=".fragment.Fragment_Main">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="4dp"
+        android:orientation="vertical"
+        android:weightSum="100">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textSize="@dimen/title_text_size"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:text="@string/app_name"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:padding="4dp"
+                android:layout_weight="1"
+                android:gravity="center">
+                <RadioGroup
+                    android:id="@+id/main_RGP_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/_8sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+                    <RadioButton
+                        android:id="@+id/main_RBT_login"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="30"
+                        android:background="@drawable/style_btn_selector"
+                        android:text="@string/btn_login"
+                        android:textSize="@dimen/button_text_size"
+                        android:gravity="center"
+                        android:button="@null">
+                    </RadioButton>
+                    <RadioButton
+                        android:id="@+id/main_RBT_signup"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="30"
+                        android:background="@drawable/style_btn_selector"
+                        android:text="@string/btn_signup"
+                        android:textSize="@dimen/button_text_size"
+                        android:gravity="center"
+                        android:button="@null">
+                    </RadioButton>
+                </RadioGroup>
+<!--                <Button-->
+<!--                    android:id="@+id/main_BTN_login"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="30"-->
+<!--                    android:text="@string/btn_login"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="@dimen/button_text_size"-->
+<!--                    android:gravity="center"-->
+<!--                    android:background="@drawable/style_btn_tab_selected" />-->
+<!--                <Button-->
+<!--                    android:id="@+id/main_BTN_signup"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="30"-->
+<!--                    android:text="@string/btn_signup"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="@dimen/button_text_size"-->
+<!--                    android:gravity="center"-->
+<!--                    android:background="@drawable/style_btn_tab_not_selected"/>-->
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/main_LAY_form"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="70"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+        </FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:orientation="vertical"
+            android:baselineAligned="false"
+            android:gravity="right"
+            android:weightSum="100">
+            <ImageButton
+                android:id="@+id/main_IBT_next"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="60"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:background="@drawable/ic_baseline_arrow_forward_ios_24">
+
+            </ImageButton>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

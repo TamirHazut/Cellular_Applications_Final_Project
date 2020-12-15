@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/_8sdp"
+        android:layout_margin="@dimen/_8sdp"
+        android:orientation="vertical"
+        android:weightSum="100">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="50"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/_20sdp">
+            <EditText
+                android:id="@+id/login_EDT_phonenumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_16sdp"
+                android:padding="@dimen/_10sdp"
+                android:layout_marginVertical="@dimen/_2sdp"
+                android:hint="@string/phonenumber"
+                android:background="@drawable/style_edt_round_corners_with_border"/>
+
+            <EditText
+                android:id="@+id/login_EDT_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:padding="@dimen/_10sdp"
+                android:textSize="@dimen/_16sdp"
+                android:layout_marginVertical="@dimen/_2sdp"
+                android:hint="@string/password"
+                android:background="@drawable/style_edt_round_corners_with_border"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>
