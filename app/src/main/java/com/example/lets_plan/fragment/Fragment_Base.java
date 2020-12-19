@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.lets_plan.logic.SharedPreferencesSingleton;
+import com.example.lets_plan.logic.data.User;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;

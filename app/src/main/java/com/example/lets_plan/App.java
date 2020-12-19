@@ -2,8 +2,10 @@ package com.example.lets_plan;
 
 import android.app.Application;
 
+import com.example.lets_plan.activity.Activity_Base;
 import com.example.lets_plan.logic.LocationHandlerSingleton;
 import com.example.lets_plan.logic.SharedPreferencesSingleton;
+import com.example.lets_plan.logic.UserRepositorySingleton;
 
 public class App extends Application {
 

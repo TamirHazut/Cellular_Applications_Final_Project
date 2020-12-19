@@ -2,7 +2,6 @@ package com.example.lets_plan.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.lets_plan.R;
+import com.example.lets_plan.logic.UserRepositorySingleton;
+import com.example.lets_plan.logic.callback.CallbackInterface;
 
 public class Fragment_Main extends Fragment_Base {
     private RadioButton main_RBT_login;
@@ -68,9 +69,11 @@ public class Fragment_Main extends Fragment_Base {
             @Override
             public void onClick(View v) {
                 if (main_RBT_login.isChecked()) {
-                    Log.d("gaga", "Login completed");
+                    Fragment_Login fragmentLogin = (Fragment_Login)getChildFragmentManager().findFragmentById(R.id.main_LAY_form);
+                    UserRepositorySingleton.getInstance().signIn(fragmentLogin.getUser());
                 } else if (main_RBT_signup.isChecked()) {
-                    Log.d("gaga", "Signup completed");
+                    Fragment_Signup fragmentSignup = (Fragment_Signup) getChildFragmentManager().findFragmentById(R.id.main_LAY_form);
+                    UserRepositorySingleton.getInstance().signUp(fragmentSignup.getUser());
                 }
             }
         });
@@ -89,6 +92,13 @@ public class Fragment_Main extends Fragment_Base {
             fragment = new Fragment_Login();
         } else if (this.main_RBT_signup.isChecked()) {
             fragment = new Fragment_Signup();
+            UserRepositorySingleton.getInstance().setCallbackInterface(new CallbackInterface() {
+                @Override
+                public void onCall() {
+                    main_RBT_login.setChecked(true);
+                    changeCurrentView();
+                }
+            });
         }
         return fragment;
     }

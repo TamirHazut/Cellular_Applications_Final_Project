@@ -10,9 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.lets_plan.R;
+import com.example.lets_plan.logic.data.User;
 
 public class Fragment_Login extends Fragment_Base {
-    private EditText login_EDT_phonenumber;
+    private EditText signup_EDT_email;
     private EditText login_EDT_password;
 
     public Fragment_Login() {
@@ -34,11 +35,16 @@ public class Fragment_Login extends Fragment_Base {
     }
 
     private void findViews(View view) {
-        this.login_EDT_phonenumber = view.findViewById(R.id.login_EDT_phonenumber);
+        this.signup_EDT_email = view.findViewById(R.id.login_EDT_email);
         this.login_EDT_password = view.findViewById(R.id.login_EDT_password);
     }
 
     private void initViews() {
 
+    }
+
+    public User getUser() {
+        return new User().setEmail(this.signup_EDT_email.getText().toString())
+                .setPassword(this.login_EDT_password.getText().toString());
     }
 }

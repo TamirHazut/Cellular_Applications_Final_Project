@@ -10,6 +10,8 @@ import com.example.lets_plan.fragment.Fragment_Main;
 import com.example.lets_plan.logic.Constants;
 import com.example.lets_plan.logic.LocationHandlerSingleton;
 import com.example.lets_plan.logic.SharedPreferencesSingleton;
+import com.example.lets_plan.logic.UserRepositorySingleton;
+import com.example.lets_plan.logic.data.User;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
@@ -20,6 +22,7 @@ public class Activity_Main extends Activity_Base {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UserRepositorySingleton.init(this);
         setContentView(R.layout.activity_main);
         gson = new Gson();
         String jsonFromMemory = SharedPreferencesSingleton.getInstance().getPrefs().getString(Constants.LOCATION, "");

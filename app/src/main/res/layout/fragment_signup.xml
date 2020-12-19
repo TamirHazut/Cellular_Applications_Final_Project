@@ -18,6 +18,8 @@
                 android:id="@+id/signup_EDT_fullname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:inputType="text"
                 android:textSize="@dimen/_16sdp"
                 android:padding="@dimen/_10sdp"
                 android:layout_marginVertical="@dimen/_2sdp"
@@ -25,13 +27,15 @@
                 android:background="@drawable/style_edt_round_corners_with_border" />
 
             <EditText
-                android:id="@+id/signup_EDT_phonenumber"
+                android:id="@+id/signup_EDT_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:inputType="textEmailAddress"
                 android:textSize="@dimen/_16sdp"
                 android:padding="@dimen/_10sdp"
                 android:layout_marginVertical="@dimen/_2sdp"
-                android:hint="@string/phonenumber"
+                android:hint="@string/email"
                 android:background="@drawable/style_edt_round_corners_with_border" />
 
 
@@ -40,6 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:maxLines="1"
                 android:inputType="textPassword"
                 android:textSize="@dimen/_16sdp"
                 android:padding="@dimen/_10sdp"
