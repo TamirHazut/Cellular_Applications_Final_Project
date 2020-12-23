@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.lets_plan.R;
-import com.example.lets_plan.logic.data.User;
+import com.example.lets_plan.data.User;
 
 public class Fragment_Login extends Fragment_Base {
     private EditText signup_EDT_email;

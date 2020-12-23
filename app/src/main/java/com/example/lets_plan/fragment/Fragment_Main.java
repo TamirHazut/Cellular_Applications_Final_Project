@@ -12,25 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.lets_plan.R;
 import com.example.lets_plan.logic.UserRepositorySingleton;
 import com.example.lets_plan.logic.callback.CallbackInterface;
 
-public class Fragment_Main extends Fragment_Base {
+public class Fragment_Main extends Fragment_Container {
     private RadioButton main_RBT_login;
     private RadioButton main_RBT_signup;
     private ImageButton main_IBT_next;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,9 +41,12 @@ public class Fragment_Main extends Fragment_Base {
         this.main_RBT_login = view.findViewById(R.id.main_RBT_login);
         this.main_RBT_signup = view.findViewById(R.id.main_RBT_signup);
         this.main_IBT_next = view.findViewById(R.id.main_IBT_next);
+        setContainerViewId(R.id.main_LAY_form);
+
     }
 
     private void initViews() {
+        setHasChildFragments(true);
         this.main_RBT_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,15 +75,23 @@ public class Fragment_Main extends Fragment_Base {
         changeCurrentView();
     }
 
-    private void changeCurrentView() {
-        changeButtonViews();
-        switchChildFragments(createFragment());
-    }
+//    @Override
+//    protected void changeCurrentView() {
+//        changeButtonViews();
+//        switchChildFragments(R.id.main_LAY_form, createFragment());
+//    }
 
-    private Fragment createFragment() {
-        Fragment fragment = null;
+    @Override
+    protected Fragment_Base createFragment() {
+        Fragment_Base fragment = null;
         if (this.main_RBT_login.isChecked()) {
             fragment = new Fragment_Login();
+            UserRepositorySingleton.getInstance().setCallbackInterface(new CallbackInterface() {
+                @Override
+                public void onCall() {
+                    switchParentFragment(R.id.main_FGMT_container, new Fragment_Actions(), false);
+                }
+            });
         } else if (this.main_RBT_signup.isChecked()) {
             fragment = new Fragment_Signup();
             UserRepositorySingleton.getInstance().setCallbackInterface(new CallbackInterface() {
@@ -103,7 +105,13 @@ public class Fragment_Main extends Fragment_Base {
         return fragment;
     }
 
-    private void changeButtonViews() {
+//    private void switchParentFragment() {
+//        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.main_FGMT_container, new Fragment_Actions(), Fragment_Actions.class.getSimpleName()).addToBackStack(null).commit();
+//    }
+
+    @Override
+    protected void changeButtonViews() {
         if (this.main_RBT_login.isChecked()) {
             this.main_RBT_login.setBackgroundResource(R.drawable.style_btn_tab_selected);
             this.main_RBT_login.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
@@ -117,14 +125,14 @@ public class Fragment_Main extends Fragment_Base {
         }
     }
 
-    private void switchChildFragments(Fragment fragment) {
-        if (fragment != null) {
-            getChildFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_LAY_form, fragment, fragment.getClass().getSimpleName())
-                    .addToBackStack(getClass().getSimpleName())
-                    .commit();
-        }
-    }
+//    private void switchChildFragments(Fragment fragment) {
+//        if (fragment != null) {
+//            getChildFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.main_LAY_form, fragment, fragment.getClass().getSimpleName())
+//                    .addToBackStack(getClass().getSimpleName())
+//                    .commit();
+//        }
+//    }
 
 }

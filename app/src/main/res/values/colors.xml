@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="btn2_blue">#1e4072</color>
 
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
@@ -24,5 +25,7 @@
     <color name="btn_border">#025abf</color>
     <color name="btn_tab_selected">#3BA5FA</color>
     <color name="btn_tab_not_selected">#00FFFFFF</color>
+
+    <color name="mtrl_textinput_default_box_stroke_color">#025abf</color>
 
 </resources>

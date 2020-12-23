@@ -50,10 +50,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
 
-
-
     // Gson
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    // Material.io
+    implementation 'com.google.android.material:material:1.2.1'
 
     // Test
     testImplementation 'junit:junit:4.+'

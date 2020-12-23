@@ -7,9 +7,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.lets_plan.logic.SharedPreferencesSingleton;
-import com.example.lets_plan.logic.data.User;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -49,6 +49,11 @@ public abstract class Fragment_Base extends Fragment {
 
     protected <T> T fromJson(String json, Type type) {
         return this.gson.fromJson(json, type);
+    }
+
+    protected void switchParentFragment(int containerViewId, Fragment_Base fragment, boolean addToBackStack) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(containerViewId, fragment, fragment.getClass().getSimpleName()).addToBackStack((addToBackStack ? getClass().getSimpleName() : null)).commit();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.lets_plan.logic.data;
+package com.example.lets_plan.data;
 
 public class User {
     private String fullname;

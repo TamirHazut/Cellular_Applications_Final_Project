@@ -14,7 +14,26 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-    <style name="Theme.Main.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+<!--    <style name="Theme.Main.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">-->
+<!--        &lt;!&ndash; Primary brand color. &ndash;&gt;-->
+<!--        <item name="colorPrimary">#2196F3</item>-->
+<!--        <item name="colorPrimaryVariant">#3F51B5</item>-->
+<!--        <item name="colorOnPrimary">@color/white</item>-->
+<!--        &lt;!&ndash; Secondary brand color. &ndash;&gt;-->
+<!--        <item name="colorSecondary">@color/teal_200</item>-->
+<!--        <item name="colorSecondaryVariant">@color/teal_700</item>-->
+<!--        <item name="colorOnSecondary">@color/black</item>-->
+<!--        &lt;!&ndash; Status bar color. &ndash;&gt;-->
+<!--        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>-->
+<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+<!--        <item name="android:windowFullscreen">false</item>-->
+<!--        <item name="android:windowTranslucentNavigation">false</item>-->
+<!--        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>-->
+<!--    </style>-->
+<!--    <style name="Theme.Custom.RoundedCornerMaterialButton" parent="Widget.AppCompat.Button.Colored">-->
+<!--        <item name="android:background">@drawable/style_btn_round_corners_blue</item>-->
+<!--    </style>-->
+    <style name="Theme.Main.Material.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#2196F3</item>
         <item name="colorPrimaryVariant">#3F51B5</item>
@@ -29,11 +48,11 @@
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
+    </style>
+    <style name="Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/btn_border</item>
+    </style>
 
-    </style>
-    <style name="Theme.War.RoundedCornerMaterialButton" parent="Widget.AppCompat.Button.Colored">
-        <item name="android:background">@drawable/style_btn_round_corners_blue</item>
-    </style>
 
 <!--    <style name="Theme.War.RecyclerViewHeader">-->
 <!--        <item name="android:background">@drawable/style_recyclerview_header</item>-->

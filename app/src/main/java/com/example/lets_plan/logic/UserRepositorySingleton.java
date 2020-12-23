@@ -5,9 +5,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.lets_plan.fragment.Fragment_Signup;
 import com.example.lets_plan.logic.callback.CallbackInterface;
-import com.example.lets_plan.logic.data.User;
+import com.example.lets_plan.data.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -25,6 +24,7 @@ public class UserRepositorySingleton {
     private final Gson gson;
     private Activity activity;
     private CallbackInterface callbackInterface;
+    private FirebaseUser currentUser;
 
     private UserRepositorySingleton(Activity activity) {
         this.db = FirebaseFirestore.getInstance();
@@ -45,8 +45,8 @@ public class UserRepositorySingleton {
         dbAuth.createUserWithEmailAndPassword(newUser.getEmail(), newUser.getPassword())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser user = dbAuth.getCurrentUser();
-                        user.updateProfile(new UserProfileChangeRequest.Builder()
+                        currentUser = dbAuth.getCurrentUser();
+                        currentUser.updateProfile(new UserProfileChangeRequest.Builder()
                                 .setDisplayName(newUser.getFullname())
                                 .build());
                         Toast.makeText(activity, Constants.REGISTERED_SUCCESSFULLY, Toast.LENGTH_LONG).show();
@@ -64,6 +64,9 @@ public class UserRepositorySingleton {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            currentUser = dbAuth.getCurrentUser();
+                            SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, currentUser.getEmail()).apply();
+                            callbackInterface.onCall();
                             Toast.makeText(activity, Constants.LOGIN_SUCCESSFUL, Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(activity, Constants.LOGIN_FAILED, Toast.LENGTH_LONG).show();

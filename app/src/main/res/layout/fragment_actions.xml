@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layoutDirection="ltr"
+    tools:context=".fragment.Fragment_Main">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="4dp"
+        android:orientation="vertical"
+        android:weightSum="100">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:padding="4dp"
+                android:layout_weight="1"
+                android:gravity="center">
+                <RadioGroup
+                    android:id="@+id/main_RGP_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/_8sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+                    <RadioButton
+                        android:id="@+id/actions_RBT_guestslist"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="30"
+                        android:background="@drawable/style_btn_selector"
+                        android:text="@string/btn_guestslist"
+                        android:textSize="@dimen/button_text_size"
+                        android:gravity="center"
+                        android:button="@null">
+                    </RadioButton>
+                    <RadioButton
+                        android:id="@+id/actions_RBT_tablesarrangement"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="30"
+                        android:background="@drawable/style_btn_selector"
+                        android:text="@string/btn_tables_arrangement"
+                        android:textSize="@dimen/button_text_size"
+                        android:gravity="center"
+                        android:button="@null">
+                    </RadioButton>
+                    <RadioButton
+                        android:id="@+id/actions_RBT_eventhall"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="30"
+                        android:background="@drawable/style_btn_selector"
+                        android:text="@string/btn_eventhall"
+                        android:textSize="@dimen/button_text_size"
+                        android:gravity="center"
+                        android:button="@null">
+                    </RadioButton>
+                </RadioGroup>
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/actions_LAY_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="90"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+        </FrameLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

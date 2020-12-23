@@ -37,7 +37,7 @@ public class Activity_Base extends AppCompatActivity {
     }
 
     public void backToMain() {
-        FragmentManager fm = getSupportFragmentManager();
+//        FragmentManager fm = getSupportFragmentManager();
 //        fm.popBackStackImmediate(Fragment_Main.class.getSimpleName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }

@@ -2,9 +2,18 @@
     <string name="app_name">Let`s Plan</string>
     <string name="btn_login">Login</string>
     <string name="btn_signup">Sign up</string>
+    <string name="btn_guestslist">Guests list</string>
+    <string name="btn_send_invites">Send invites</string>
+    <string name="btn_tables_arrangement">Tables Arrangement</string>
+    <string name="btn_eventhall">Event Hall</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
     <string name="fullname">Full name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="phonenumber">Phone number</string>
+    <string name="new_category">New category</string>
+    <string name="guest_configuration">Guest Configuration</string>
+    <string name="category_prompt">Category</string>
+    <string name="number_of_guests_prompt">How many guests</string>
 </resources>
