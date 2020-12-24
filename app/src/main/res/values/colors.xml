@@ -26,6 +26,9 @@
     <color name="btn_tab_selected">#3BA5FA</color>
     <color name="btn_tab_not_selected">#00FFFFFF</color>
 
+    <color name="listitem_fullname">#191919</color>
+    <color name="listitem_category">#505050</color>
+
     <color name="mtrl_textinput_default_box_stroke_color">#025abf</color>
 
 </resources>

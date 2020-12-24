@@ -53,4 +53,9 @@ public class Guest implements Comparable<Guest> {
     public int compareTo(Guest o) {
         return this.getPhoneNumber().compareTo(o.getPhoneNumber());
     }
+
+    @Override
+    public String toString() {
+        return this.fullname + " (" + this.numberOfGuests + ")";
+    }
 }

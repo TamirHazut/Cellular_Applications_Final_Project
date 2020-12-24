@@ -33,9 +33,11 @@ public class Fragment_Guest extends Fragment_Base {
     private Button guest_BTN_save;
     private Button guest_BTN_cancel;
     private Guest currentGuest;
+    private GuestslistHandler guestslistHandler;
 
-    public Fragment_Guest() {
+    public Fragment_Guest(GuestslistHandler guestslistHandler) {
         this.currentGuest = new Guest();
+        this.guestslistHandler = guestslistHandler;
     }
 
     @Nullable
@@ -80,7 +82,7 @@ public class Fragment_Guest extends Fragment_Base {
                 currentGuest.setFullname(fullname);
                 currentGuest.setPhoneNumber(phonenumber);
                 currentGuest.setCategory(new_category);
-                GuestslistHandler.getInstance().addNewGuest(currentGuest);
+                guestslistHandler.addNewGuest(currentGuest);
                 if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                 }
@@ -125,7 +127,7 @@ public class Fragment_Guest extends Fragment_Base {
             public void afterTextChanged(Editable s) {
             }
         });
-        List<String> filters = GuestslistHandler.getInstance().getFilterValues().stream().map(Filter::getName).collect(Collectors.toList());
+        List<String> filters = guestslistHandler.getFilterValues().stream().map(Filter::getName).collect(Collectors.toList());
         filters.add(Constants.OTHER_CATEGORY);
         this.guest_DDM_categories.setAdapter(new ArrayAdapter<String>(
                 getActivity().getApplicationContext(),

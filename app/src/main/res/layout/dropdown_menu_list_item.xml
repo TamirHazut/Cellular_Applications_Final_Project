@@ -6,6 +6,6 @@
     android:ellipsize="end"
     android:maxLines="1"
     android:textAppearance="?attr/textAppearanceSubtitle1"
-    android:textSize="@dimen/_16sdp"
+    android:textSize="@dimen/_12sdp"
     android:layoutDirection="ltr">
 </TextView>

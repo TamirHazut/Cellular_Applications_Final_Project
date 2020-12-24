@@ -1,6 +1,9 @@
 package com.example.lets_plan.fragment;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lets_plan.R;
 import com.example.lets_plan.data.Filter;
-import com.example.lets_plan.data.Guest;
 import com.example.lets_plan.logic.Constants;
 import com.example.lets_plan.logic.GuestslistHandler;
 import com.example.lets_plan.logic.callback.CallbackInterface;
@@ -32,8 +34,6 @@ public class Fragment_Guestslist extends Fragment_Base {
     private ImageButton guestslist_IBT_add;
 
     public Fragment_Guestslist() {
-        GuestslistHandler.init(getFromSharedPreferences(Constants.USER_INFO, ""));
-        this.guestslistHandler = GuestslistHandler.getInstance();
     }
 
     @Nullable
@@ -54,7 +54,7 @@ public class Fragment_Guestslist extends Fragment_Base {
     @Override
     public void onResume() {
         super.onResume();
-        updateSpinner();
+        updateDropdown();
     }
 
     private void findViews(View view) {
@@ -65,16 +65,17 @@ public class Fragment_Guestslist extends Fragment_Base {
     }
 
     private void initViews() {
-        GuestslistHandler.getInstance().setCallbackInterface(new CallbackInterface() {
+        this.guestslistHandler = new GuestslistHandler(getContext().getApplicationContext(), getFromSharedPreferences(Constants.USER_INFO, ""), this.guestslist_RCV_list);
+        this.guestslistHandler.setCallbackInterface(new CallbackInterface() {
             @Override
             public void onCall() {
-                updateSpinner();
+                updateDropdown();
             }
         });
         this.guestslist_IBT_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switchParentFragment(R.id.main_FGMT_container, new Fragment_Guest(), false);
+                switchParentFragment(R.id.main_FGMT_container, new Fragment_Guest(guestslistHandler), false);
             }
         });
         this.guestslist_BTN_sendinvites.setOnClickListener(new View.OnClickListener() {
@@ -85,12 +86,7 @@ public class Fragment_Guestslist extends Fragment_Base {
         });
     }
 
-    private void updateGuestsList(List<Guest> guestsList) {
-
-    }
-
-
-    private void updateSpinner() {
+    private void updateDropdown() {
         List<Filter> filters = new ArrayList<>();
         filters.add(this.guestslistHandler.getTotalFilter());
         filters.addAll(this.guestslistHandler.getFilterValues());
@@ -102,16 +98,19 @@ public class Fragment_Guestslist extends Fragment_Base {
                 )
         );
         this.guestslist_DDM_filters.setText(filters.get(0).toString(), false);
-        this.guestslist_DDM_filters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        this.guestslist_DDM_filters.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Filter filter = (Filter) parent.getItemAtPosition(position);
-                updateGuestsList(GuestslistHandler.getInstance().getFilteredList(filter.getName()));
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String filter = s.toString().split(" ")[0];
+                guestslistHandler.updateGuestsList(filter);
+            }
 
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
     }

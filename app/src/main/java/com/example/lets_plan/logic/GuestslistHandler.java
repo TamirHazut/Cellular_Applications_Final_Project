@@ -1,35 +1,48 @@
 package com.example.lets_plan.logic;
 
+import android.content.Context;
+import android.util.Log;
+import android.view.View;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.lets_plan.data.Filter;
 import com.example.lets_plan.data.Guest;
 import com.example.lets_plan.logic.callback.CallbackInterface;
+import com.example.lets_plan.logic.callback.ItemClickListener;
 import com.example.lets_plan.logic.utils.Converter;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class GuestslistHandler {
-    private static GuestslistHandler instance;
     private FirebaseFirestore db;
     private Map<Filter, List<Guest>> guestslist;
     private Converter<Guest> converter;
     private String ownerID;
     private int totalGuests;
     private CallbackInterface callbackInterface;
+    private RecyclerView guestslist_RCV_list;
+    private GuestslistRecyclerViewAdapter guestslistAdapter;
 
-    private GuestslistHandler(String ownerID) {
+    public GuestslistHandler(Context context, String ownerID, RecyclerView guestslist_RCV_list) {
         this.db = FirebaseFirestore.getInstance();
         this.guestslist = new TreeMap<>();
         this.converter = new Converter<>();
         this.ownerID = ownerID;
-        loadGuestsList();
+        this.guestslist_RCV_list = guestslist_RCV_list;
+        loadGuestsList(context);
     }
 
-    private void loadGuestsList() {
+
+
+    private void loadGuestsList(Context context) {
         if (ownerID != null && !ownerID.isEmpty()) {
             this.db.collection(ownerID)
                     .get()
@@ -38,10 +51,23 @@ public class GuestslistHandler {
                             addGuestToList(converter.mapToObject(snapshot.getData(), Guest.class));
                             if (callbackInterface != null) {
                                 callbackInterface.onCall();
+                                initGuestsList(context, Constants.ALL);
                             }
                         });
                     });
         }
+    }
+
+    public void initGuestsList(Context context, String filter) {
+        this.guestslistAdapter = new GuestslistRecyclerViewAdapter(context, getFilteredList(filter));
+        guestslistAdapter.setClickListener(new ItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Log.d("GuestslistRecyclerView", guestslistAdapter.getItem(position).toString());
+            }
+        });
+        this.guestslist_RCV_list.setLayoutManager(new LinearLayoutManager(context));
+        this.guestslist_RCV_list.setAdapter(guestslistAdapter);
     }
 
     private void addGuestToList(Guest guest) {
@@ -61,7 +87,6 @@ public class GuestslistHandler {
         }
     }
 
-
     public void addNewGuest(Guest guest) {
         addGuestToList(guest);
         db.collection(ownerID).document(guest.getPhoneNumber()).set(guest);
@@ -72,6 +97,7 @@ public class GuestslistHandler {
         if (category.equals(Constants.ALL)) {
             List<Guest> allGuests = new ArrayList<>();
             guestslist.values().stream().forEach(list -> allGuests.addAll(list));
+            Collections.sort(allGuests);
             return allGuests;
         } else if (guestslist.containsKey(temp)) {
             return guestslist.get(temp);
@@ -84,16 +110,6 @@ public class GuestslistHandler {
         return this.guestslist.keySet().stream().collect(Collectors.toList());
     }
 
-    public static void init(String ownerID) {
-        if (instance == null) {
-            instance = new GuestslistHandler(ownerID);
-        }
-    }
-
-    public static GuestslistHandler getInstance() {
-        return instance;
-    }
-
     public Filter getTotalFilter() {
         totalGuests = 0;
         this.guestslist.values().stream().forEach(list -> list.forEach(guest -> totalGuests += guest.getNumberOfGuests()));
@@ -103,4 +119,12 @@ public class GuestslistHandler {
     public void setCallbackInterface(CallbackInterface callbackInterface) {
         this.callbackInterface = callbackInterface;
     }
+
+    public void updateGuestsList(String filter) {
+        if (this.guestslist_RCV_list != null && this.guestslistAdapter != null) {
+            this.guestslist_RCV_list.removeAllViewsInLayout();
+            this.guestslistAdapter.updateGuestList(getFilteredList(filter));
+        }
+    }
+
 }
