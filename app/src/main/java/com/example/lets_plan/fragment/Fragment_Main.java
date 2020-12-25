@@ -1,6 +1,5 @@
 package com.example.lets_plan.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,15 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.lets_plan.R;
 import com.example.lets_plan.logic.UserRepositorySingleton;
-import com.example.lets_plan.logic.callback.CallbackInterface;
+import com.example.lets_plan.logic.callback.DataReadyInterface;
 
 public class Fragment_Main extends Fragment_Container {
     private RadioButton main_RBT_login;
@@ -86,17 +82,17 @@ public class Fragment_Main extends Fragment_Container {
         Fragment_Base fragment = null;
         if (this.main_RBT_login.isChecked()) {
             fragment = new Fragment_Login();
-            UserRepositorySingleton.getInstance().setCallbackInterface(new CallbackInterface() {
+            UserRepositorySingleton.getInstance().setDataReadyInterface(new DataReadyInterface() {
                 @Override
-                public void onCall() {
+                public void dataReady() {
                     switchParentFragment(R.id.main_FGMT_container, new Fragment_Actions(), false);
                 }
             });
         } else if (this.main_RBT_signup.isChecked()) {
             fragment = new Fragment_Signup();
-            UserRepositorySingleton.getInstance().setCallbackInterface(new CallbackInterface() {
+            UserRepositorySingleton.getInstance().setDataReadyInterface(new DataReadyInterface() {
                 @Override
-                public void onCall() {
+                public void dataReady() {
                     main_RBT_login.setChecked(true);
                     changeCurrentView();
                 }

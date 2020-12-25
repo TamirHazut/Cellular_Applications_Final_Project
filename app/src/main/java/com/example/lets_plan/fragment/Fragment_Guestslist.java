@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -19,11 +18,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lets_plan.R;
 import com.example.lets_plan.data.Filter;
+import com.example.lets_plan.data.Guest;
 import com.example.lets_plan.logic.Constants;
 import com.example.lets_plan.logic.GuestslistHandler;
-import com.example.lets_plan.logic.callback.CallbackInterface;
+import com.example.lets_plan.logic.callback.DataReadyInterface;
+import com.example.lets_plan.logic.callback.GuestClickedListener;
+import com.example.lets_plan.logic.callback.ItemClickListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Fragment_Guestslist extends Fragment_Base {
@@ -66,10 +69,16 @@ public class Fragment_Guestslist extends Fragment_Base {
 
     private void initViews() {
         this.guestslistHandler = new GuestslistHandler(getContext().getApplicationContext(), getFromSharedPreferences(Constants.USER_INFO, ""), this.guestslist_RCV_list);
-        this.guestslistHandler.setCallbackInterface(new CallbackInterface() {
+        this.guestslistHandler.setDataReadyInterface(new DataReadyInterface() {
             @Override
-            public void onCall() {
+            public void dataReady() {
                 updateDropdown();
+            }
+        });
+        this.guestslistHandler.setGuestClickedListener(new GuestClickedListener() {
+            @Override
+            public void guestClicked(Guest guest) {
+                switchParentFragment(R.id.main_FGMT_container, new Fragment_Guest(guestslistHandler, guest, false), false);
             }
         });
         this.guestslist_IBT_add.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +114,17 @@ public class Fragment_Guestslist extends Fragment_Base {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String filter = s.toString().split(" ")[0];
+                String[] temp = s.toString().split(" ");
+                String filter = new String("");
+                if (temp.length > 2) {
+                    int i;
+                    for (i = 0; i < temp.length-2; i++) {
+                        filter += temp[i] + " ";
+                    }
+                    filter += temp[i];
+                } else {
+                    filter = temp[0];
+                }
                 guestslistHandler.updateGuestsList(filter);
             }
 

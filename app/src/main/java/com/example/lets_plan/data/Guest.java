@@ -16,6 +16,10 @@ public class Guest implements Comparable<Guest> {
         this.category = category;
     }
 
+    public Guest(Guest guest) {
+        this(guest.getFullname(), guest.getPhoneNumber(), guest.getNumberOfGuests(), guest.getCategory());
+    }
+
     public String getFullname() {
         return fullname;
     }
@@ -47,7 +51,6 @@ public class Guest implements Comparable<Guest> {
     public void setCategory(String category) {
         this.category = category;
     }
-
 
     @Override
     public int compareTo(Guest o) {

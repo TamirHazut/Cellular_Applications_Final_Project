@@ -6,6 +6,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -33,11 +34,19 @@ public class Fragment_Guest extends Fragment_Base {
     private Button guest_BTN_save;
     private Button guest_BTN_cancel;
     private Guest currentGuest;
+    private Guest oldGuestData;
     private GuestslistHandler guestslistHandler;
+    private boolean newGuest;
 
     public Fragment_Guest(GuestslistHandler guestslistHandler) {
-        this.currentGuest = new Guest();
+        this(guestslistHandler, new Guest(), true);
+    }
+
+    public Fragment_Guest(GuestslistHandler guestslistHandler, Guest guest, boolean newGuest) {
         this.guestslistHandler = guestslistHandler;
+        this.currentGuest = guest;
+        this.oldGuestData = new Guest(guest);
+        this.newGuest = newGuest;
     }
 
     @Nullable
@@ -67,38 +76,25 @@ public class Fragment_Guest extends Fragment_Base {
 
     private void initViews() {
         updateDropdowns();
-        this.guest_BTN_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String fullname = guest_EDT_fullname.getText().toString();
-                String phonenumber = guest_EDT_phonenumber.getText().toString();
-                String new_category = guest_EDT_new_category.getText().toString();
-                if (fullname.isEmpty()
-                        || phonenumber.isEmpty()
-                        || currentGuest.getNumberOfGuests() == null
-                        || (currentGuest.getCategory() == null && new_category.isEmpty())) {
-                    return;
-                }
-                currentGuest.setFullname(fullname);
-                currentGuest.setPhoneNumber(phonenumber);
-                currentGuest.setCategory(new_category);
-                guestslistHandler.addNewGuest(currentGuest);
-                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getActivity().getSupportFragmentManager().popBackStackImmediate();
-                }
-            }
-        });
-        this.guest_BTN_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getActivity().getSupportFragmentManager().popBackStackImmediate();
-                }
-            }
-        });
+        if (currentGuest.getFullname() != null && !currentGuest.getFullname().isEmpty()) {
+            this.guest_EDT_fullname.setText(currentGuest.getFullname());
+        }
+        if (currentGuest.getPhoneNumber() != null && !currentGuest.getPhoneNumber().isEmpty()) {
+            this.guest_EDT_phonenumber.setText(currentGuest.getPhoneNumber());
+            this.guest_EDT_phonenumber.setEnabled(false);
+            this.guest_EDT_phonenumber.setInputType(EditorInfo.TYPE_NULL);
+        }
+        if (currentGuest.getNumberOfGuests() != null) {
+            this.guest_DDM_numberofguests.setText(currentGuest.getNumberOfGuests().toString(), false);
+        }
+        if (currentGuest.getCategory() != null && !currentGuest.getCategory().isEmpty()) {
+            this.guest_DDM_categories.setText(currentGuest.getCategory(), false);
+        }
+        setButtonsClickListeners();
     }
 
     private void updateDropdowns() {
+        // How many guests dropdown
         List<Long> numberList = new ArrayList<>();
         for (int i = 1; i <= Constants.MAX_NUMBER_OF_GUESTS_OPTIONS; i++) {
             numberList.add(new Long(i));
@@ -112,6 +108,11 @@ public class Fragment_Guest extends Fragment_Base {
         this.guest_DDM_numberofguests.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                try {
+//                    oldGuestData.setNumberOfGuests(Long.parseLong(s.toString()));
+//                } catch (NumberFormatException ex) {
+//                    oldGuestData.setNumberOfGuests(null);
+//                }
             }
 
             @Override
@@ -127,6 +128,7 @@ public class Fragment_Guest extends Fragment_Base {
             public void afterTextChanged(Editable s) {
             }
         });
+        // Filters dropdown
         List<String> filters = guestslistHandler.getFilterValues().stream().map(Filter::getName).collect(Collectors.toList());
         filters.add(Constants.OTHER_CATEGORY);
         this.guest_DDM_categories.setAdapter(new ArrayAdapter<String>(
@@ -137,6 +139,7 @@ public class Fragment_Guest extends Fragment_Base {
         this.guest_DDM_categories.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                oldGuestData.setCategory(s.toString());
             }
 
             @Override
@@ -159,6 +162,51 @@ public class Fragment_Guest extends Fragment_Base {
             public void afterTextChanged(Editable s) {
             }
         });
+    }
 
+    private void setButtonsClickListeners() {
+        this.guest_BTN_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String fullname = guest_EDT_fullname.getText().toString();
+                String phonenumber = guest_EDT_phonenumber.getText().toString();
+                String new_category = guest_EDT_new_category.getText().toString();
+                if (fullname.isEmpty()
+                        || phonenumber.isEmpty()
+                        || currentGuest.getNumberOfGuests() == null
+                        || (currentGuest.getCategory() == null && new_category.isEmpty())) {
+                    return;
+                }
+                if (currentGuest.getFullname() == null || isDataModified(currentGuest.getFullname(), fullname)) {
+                    currentGuest.setFullname(fullname);
+                }
+                if (isDataModified(oldGuestData.getCategory(), currentGuest.getCategory())) {
+                    if (currentGuest.getCategory() == null) {
+                        currentGuest.setCategory(new_category);
+                    }
+                }
+                if (newGuest) {
+                    currentGuest.setPhoneNumber(phonenumber);
+                    guestslistHandler.addNewGuest(currentGuest);
+                } else {
+                    guestslistHandler.updateGuest(oldGuestData, currentGuest);
+                }
+                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getActivity().getSupportFragmentManager().popBackStackImmediate();
+                }
+            }
+        });
+        this.guest_BTN_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getActivity().getSupportFragmentManager().popBackStackImmediate();
+                }
+            }
+        });
+    }
+
+    private <T> boolean isDataModified(T o1, T o2) {
+        return !o1.equals(o2);
     }
 }

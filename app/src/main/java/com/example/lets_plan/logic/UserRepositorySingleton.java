@@ -5,7 +5,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.lets_plan.logic.callback.CallbackInterface;
+import com.example.lets_plan.logic.callback.DataReadyInterface;
 import com.example.lets_plan.data.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,7 +23,7 @@ public class UserRepositorySingleton {
     private final FirebaseAuth dbAuth;
     private final Gson gson;
     private Activity activity;
-    private CallbackInterface callbackInterface;
+    private DataReadyInterface dataReadyInterface;
     private FirebaseUser currentUser;
 
     private UserRepositorySingleton(Activity activity) {
@@ -33,8 +33,8 @@ public class UserRepositorySingleton {
         this.activity = activity;
     }
 
-    public void setCallbackInterface(CallbackInterface callbackInterface) {
-        this.callbackInterface = callbackInterface;
+    public void setDataReadyInterface(DataReadyInterface dataReadyInterface) {
+        this.dataReadyInterface = dataReadyInterface;
     }
 
     public void signUp(User newUser) {
@@ -50,7 +50,7 @@ public class UserRepositorySingleton {
                                 .setDisplayName(newUser.getFullname())
                                 .build());
                         Toast.makeText(activity, Constants.REGISTERED_SUCCESSFULLY, Toast.LENGTH_LONG).show();
-                        callbackInterface.onCall();
+                        dataReadyInterface.dataReady();
                     } else {
                         Toast.makeText(activity, Constants.REGISTRATION_FAILED, Toast.LENGTH_LONG).show();
                     }
@@ -66,7 +66,7 @@ public class UserRepositorySingleton {
                         if (task.isSuccessful()) {
                             currentUser = dbAuth.getCurrentUser();
                             SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, currentUser.getEmail()).apply();
-                            callbackInterface.onCall();
+                            dataReadyInterface.dataReady();
                             Toast.makeText(activity, Constants.LOGIN_SUCCESSFUL, Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(activity, Constants.LOGIN_FAILED, Toast.LENGTH_LONG).show();
