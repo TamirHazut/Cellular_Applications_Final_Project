@@ -39,14 +39,7 @@ public class Fragment_Guest extends Fragment_Base {
     private boolean newGuest;
 
     public Fragment_Guest(GuestslistHandler guestslistHandler) {
-        this(guestslistHandler, new Guest(), true);
-    }
-
-    public Fragment_Guest(GuestslistHandler guestslistHandler, Guest guest, boolean newGuest) {
         this.guestslistHandler = guestslistHandler;
-        this.currentGuest = guest;
-        this.oldGuestData = new Guest(guest);
-        this.newGuest = newGuest;
     }
 
     @Nullable
@@ -54,6 +47,14 @@ public class Fragment_Guest extends Fragment_Base {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_guest, container, false);
+        this.newGuest = fromJson(getFromSharedPreferences(Constants.NEW_GUEST, "true"), Boolean.class);
+        if (this.newGuest) {
+            this.currentGuest = new Guest();
+            this.currentGuest = new Guest();
+        } else {
+            this.currentGuest = fromJson(getFromSharedPreferences(Constants.CURRENT_GUEST, ""), Guest.class);
+            this.oldGuestData = new Guest(currentGuest);
+        }
         return view;
     }
 
@@ -108,11 +109,6 @@ public class Fragment_Guest extends Fragment_Base {
         this.guest_DDM_numberofguests.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                try {
-//                    oldGuestData.setNumberOfGuests(Long.parseLong(s.toString()));
-//                } catch (NumberFormatException ex) {
-//                    oldGuestData.setNumberOfGuests(null);
-//                }
             }
 
             @Override
@@ -139,7 +135,9 @@ public class Fragment_Guest extends Fragment_Base {
         this.guest_DDM_categories.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                oldGuestData.setCategory(s.toString());
+                if (!newGuest) {
+                    oldGuestData.setCategory(s.toString());
+                }
             }
 
             @Override

@@ -71,12 +71,6 @@ public class Fragment_Main extends Fragment_Container {
         changeCurrentView();
     }
 
-//    @Override
-//    protected void changeCurrentView() {
-//        changeButtonViews();
-//        switchChildFragments(R.id.main_LAY_form, createFragment());
-//    }
-
     @Override
     protected Fragment_Base createFragment() {
         Fragment_Base fragment = null;
@@ -101,34 +95,14 @@ public class Fragment_Main extends Fragment_Container {
         return fragment;
     }
 
-//    private void switchParentFragment() {
-//        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.main_FGMT_container, new Fragment_Actions(), Fragment_Actions.class.getSimpleName()).addToBackStack(null).commit();
-//    }
-
     @Override
     protected void changeButtonViews() {
         if (this.main_RBT_login.isChecked()) {
-            this.main_RBT_login.setBackgroundResource(R.drawable.style_btn_tab_selected);
             this.main_RBT_login.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
-            this.main_RBT_signup.setBackgroundResource(R.drawable.style_btn_tab_not_selected);
             this.main_RBT_signup.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
         } else if (this.main_RBT_signup.isChecked()) {
-            this.main_RBT_login.setBackgroundResource(R.drawable.style_btn_tab_not_selected);
             this.main_RBT_login.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-            this.main_RBT_signup.setBackgroundResource(R.drawable.style_btn_tab_selected);
             this.main_RBT_signup.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
         }
     }
-
-//    private void switchChildFragments(Fragment fragment) {
-//        if (fragment != null) {
-//            getChildFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.main_LAY_form, fragment, fragment.getClass().getSimpleName())
-//                    .addToBackStack(getClass().getSimpleName())
-//                    .commit();
-//        }
-//    }
-
 }

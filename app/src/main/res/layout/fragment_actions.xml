@@ -39,33 +39,33 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="30"
-                        android:background="@drawable/style_btn_selector"
                         android:text="@string/btn_guestslist"
                         android:textSize="@dimen/button_text_size"
                         android:gravity="center"
-                        android:button="@null">
+                        android:button="@null"
+                        style="@style/leftRoundedButton">
                     </RadioButton>
                     <RadioButton
                         android:id="@+id/actions_RBT_tablesarrangement"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="30"
-                        android:background="@drawable/style_btn_selector"
                         android:text="@string/btn_tables_arrangement"
                         android:textSize="@dimen/button_text_size"
                         android:gravity="center"
-                        android:button="@null">
+                        android:button="@null"
+                        style="@style/defaultButton">
                     </RadioButton>
                     <RadioButton
                         android:id="@+id/actions_RBT_eventhall"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="30"
-                        android:background="@drawable/style_btn_selector"
                         android:text="@string/btn_eventhall"
                         android:textSize="@dimen/button_text_size"
                         android:gravity="center"
-                        android:button="@null">
+                        android:button="@null"
+                        style="@style/rightRoundedButton">
                     </RadioButton>
                 </RadioGroup>
             </LinearLayout>

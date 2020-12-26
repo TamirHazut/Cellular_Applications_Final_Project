@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layoutDirection="ltr"
-    tools:context=".fragment.Fragment_Main">
+    android:layoutDirection="ltr">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,44 +55,24 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="30"
-                        android:background="@drawable/style_btn_selector"
                         android:text="@string/btn_login"
                         android:textSize="@dimen/button_text_size"
                         android:gravity="center"
-                        android:button="@null">
+                        android:button="@null"
+                        style="@style/leftRoundedButton">
                     </RadioButton>
                     <RadioButton
                         android:id="@+id/main_RBT_signup"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="30"
-                        android:background="@drawable/style_btn_selector"
                         android:text="@string/btn_signup"
                         android:textSize="@dimen/button_text_size"
                         android:gravity="center"
-                        android:button="@null">
+                        android:button="@null"
+                        style="@style/rightRoundedButton">
                     </RadioButton>
                 </RadioGroup>
-<!--                <Button-->
-<!--                    android:id="@+id/main_BTN_login"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="30"-->
-<!--                    android:text="@string/btn_login"-->
-<!--                    android:textColor="@color/white"-->
-<!--                    android:textSize="@dimen/button_text_size"-->
-<!--                    android:gravity="center"-->
-<!--                    android:background="@drawable/style_btn_tab_selected" />-->
-<!--                <Button-->
-<!--                    android:id="@+id/main_BTN_signup"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="30"-->
-<!--                    android:text="@string/btn_signup"-->
-<!--                    android:textColor="@color/black"-->
-<!--                    android:textSize="@dimen/button_text_size"-->
-<!--                    android:gravity="center"-->
-<!--                    android:background="@drawable/style_btn_tab_not_selected"/>-->
             </LinearLayout>
         </LinearLayout>
 

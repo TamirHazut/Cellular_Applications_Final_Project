@@ -1,6 +1,7 @@
 package com.example.lets_plan.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,13 +57,13 @@ public class Fragment_Actions extends Fragment_Container {
                 changeCurrentView();
             }
         });
-        this.actions_RBT_guestslist.setOnClickListener(new View.OnClickListener() {
+        this.actions_RBT_tablesarrangement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeCurrentView();
             }
         });
-        this.actions_RBT_guestslist.setOnClickListener(new View.OnClickListener() {
+        this.actions_RBT_eventhall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeCurrentView();
@@ -75,26 +76,17 @@ public class Fragment_Actions extends Fragment_Container {
     @Override
     protected void changeButtonViews() {
         if (this.actions_RBT_guestslist.isChecked()) {
-            this.actions_RBT_guestslist.setBackgroundResource(R.drawable.style_btn_tab_selected);
             this.actions_RBT_guestslist.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
-            this.actions_RBT_tablesarrangement.setBackgroundResource(R.drawable.style_btn_tab_not_selected);
             this.actions_RBT_tablesarrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-            this.actions_RBT_eventhall.setBackgroundResource(R.drawable.style_btn_tab_not_selected);
             this.actions_RBT_eventhall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
         } else if (this.actions_RBT_tablesarrangement.isChecked()) {
-            this.actions_RBT_tablesarrangement.setBackgroundResource(R.drawable.style_btn_tab_not_selected);
-            this.actions_RBT_tablesarrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-            this.actions_RBT_guestslist.setBackgroundResource(R.drawable.style_btn_tab_selected);
-            this.actions_RBT_guestslist.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
-            this.actions_RBT_eventhall.setBackgroundResource(R.drawable.style_btn_tab_not_selected);
+            this.actions_RBT_guestslist.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
+            this.actions_RBT_tablesarrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
             this.actions_RBT_eventhall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
         } else if (this.actions_RBT_eventhall.isChecked()) {
-            this.actions_RBT_eventhall.setBackgroundResource(R.drawable.style_btn_tab_not_selected);
-            this.actions_RBT_eventhall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-            this.actions_RBT_guestslist.setBackgroundResource(R.drawable.style_btn_tab_selected);
-            this.actions_RBT_guestslist.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
-            this.actions_RBT_tablesarrangement.setBackgroundResource(R.drawable.style_btn_tab_not_selected);
+            this.actions_RBT_guestslist.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
             this.actions_RBT_tablesarrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
+            this.actions_RBT_eventhall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
         }
     }
 
@@ -104,9 +96,9 @@ public class Fragment_Actions extends Fragment_Container {
         if (this.actions_RBT_guestslist.isChecked()) {
             fragment = new Fragment_Guestslist();
         } else if (this.actions_RBT_tablesarrangement.isChecked()) {
-            fragment = new Fragment_TablesArrangement();
+//            fragment = new Fragment_TablesArrangement();
         } else if (this.actions_RBT_eventhall.isChecked()) {
-            fragment = new Fragment_EventHall();
+//            fragment = new Fragment_EventHall();
         }
         return fragment;
     }
