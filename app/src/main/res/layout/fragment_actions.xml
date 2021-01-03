@@ -35,7 +35,7 @@
                     android:orientation="horizontal"
                     android:weightSum="100">
                     <RadioButton
-                        android:id="@+id/actions_RBT_guestslist"
+                        android:id="@+id/actions_RBT_guests_list"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="30"
@@ -46,7 +46,7 @@
                         style="@style/leftRoundedButton">
                     </RadioButton>
                     <RadioButton
-                        android:id="@+id/actions_RBT_tablesarrangement"
+                        android:id="@+id/actions_RBT_tables_arrangement"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="30"
@@ -57,7 +57,7 @@
                         style="@style/defaultButton">
                     </RadioButton>
                     <RadioButton
-                        android:id="@+id/actions_RBT_eventhall"
+                        android:id="@+id/actions_RBT_event_hall"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="30"

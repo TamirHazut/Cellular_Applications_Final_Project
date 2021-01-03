@@ -7,23 +7,36 @@ import androidx.annotation.NonNull;
 
 import com.example.lets_plan.R;
 import com.example.lets_plan.fragment.Fragment_Main;
-import com.example.lets_plan.logic.Constants;
+import com.example.lets_plan.logic.utils.Constants;
+import com.example.lets_plan.logic.DataHandler;
 import com.example.lets_plan.logic.LocationHandlerSingleton;
 import com.example.lets_plan.logic.SharedPreferencesSingleton;
 import com.example.lets_plan.logic.UserRepositorySingleton;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.victor.loading.rotate.RotateLoading;
 
 public class Activity_Main extends Activity_Base {
+    private RotateLoading main_loader;
     private LatLng userLocation;
     private Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UserRepositorySingleton.init(this);
         setContentView(R.layout.activity_main);
+
+        // Inits
+        DataHandler.init(this);
+        UserRepositorySingleton.init(this);
+        SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.CURRENT_GUEST_FILTER, Constants.ALL).putString(Constants.CURRENT_TABLE_FILTER, Constants.ALL).apply();
         gson = new Gson();
+
+        // Loader
+        this.main_loader = findViewById(R.id.main_loader);
+        DataHandler.getInstance().setRotateLoading(this.main_loader);
+
+        // Location
         String jsonFromMemory = SharedPreferencesSingleton.getInstance().getPrefs().getString(Constants.LOCATION, "");
         this.userLocation = gson.fromJson(jsonFromMemory, LatLng.class);
         if (this.userLocation == null) {
@@ -35,6 +48,7 @@ public class Activity_Main extends Activity_Base {
                 getSupportFragmentManager().beginTransaction().add(R.id.main_FGMT_container, fragment_main).commit();
             }
         }
+
     }
 
     @Override

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.example.lets_plan.logic.callback.DataReadyInterface;
 import com.example.lets_plan.data.User;
+import com.example.lets_plan.logic.utils.Constants;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -49,7 +50,7 @@ public class UserRepositorySingleton {
                         currentUser.updateProfile(new UserProfileChangeRequest.Builder()
                                 .setDisplayName(newUser.getFullname())
                                 .build());
-                        Toast.makeText(activity, Constants.REGISTERED_SUCCESSFULLY, Toast.LENGTH_LONG).show();
+                        Toast.makeText(activity, Constants.REGISTERED_SUCCESSFULLY, Toast.LENGTH_SHORT).show();
                         dataReadyInterface.dataReady();
                     } else {
                         Toast.makeText(activity, Constants.REGISTRATION_FAILED, Toast.LENGTH_LONG).show();
@@ -58,6 +59,11 @@ public class UserRepositorySingleton {
     }
 
     public void signIn(User user) {
+        if (user == null) {
+            Toast.makeText(activity, Constants.LOGIN_FAILED, Toast.LENGTH_LONG).show();
+            return;
+        }
+        DataHandler.getInstance().getRotateLoading().start();
         dbAuth.signInWithEmailAndPassword(user.getEmail(), user.getPassword())
                 .addOnCompleteListener(
                 (Activity) activity, new OnCompleteListener<AuthResult>() {
@@ -65,9 +71,10 @@ public class UserRepositorySingleton {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             currentUser = dbAuth.getCurrentUser();
+                            DataHandler.getInstance().setOwnerID(currentUser.getEmail());
                             SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, currentUser.getEmail()).apply();
                             dataReadyInterface.dataReady();
-                            Toast.makeText(activity, Constants.LOGIN_SUCCESSFUL, Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, Constants.LOGIN_SUCCESSFUL, Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(activity, Constants.LOGIN_FAILED, Toast.LENGTH_LONG).show();
                         }

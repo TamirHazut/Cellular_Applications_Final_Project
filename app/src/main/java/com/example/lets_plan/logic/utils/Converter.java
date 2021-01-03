@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Converter<T> {
+public class Converter {
 
-    public Map<String, Object> objectToMap(T obj) {
+    public static <T> Map<String, Object> objectToMap(T obj) {
         Map<String, Object> map = new HashMap<>();
         for (Field field : obj.getClass().getDeclaredFields()) {
             field.setAccessible(true);
@@ -25,7 +25,7 @@ public class Converter<T> {
         return map;
     }
 
-    public T mapToObject(Map<String, Object> map, Class<T> clazz) {
+    public static <T> T mapToObject(Map<String, Object> map, Class<T> clazz) {
         T obj = null;
         try {
             Constructor<T> ctor = clazz.getConstructor();

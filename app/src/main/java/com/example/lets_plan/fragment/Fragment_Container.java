@@ -3,6 +3,8 @@ package com.example.lets_plan.fragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.lets_plan.logic.DataHandler;
+
 public abstract class Fragment_Container extends Fragment_Base {
     protected int containerViewId;
     protected boolean hasChildFragments;
@@ -23,6 +25,7 @@ public abstract class Fragment_Container extends Fragment_Base {
 
     protected void changeCurrentView() {
         if (hasChildFragments) {
+            DataHandler.getInstance().getRotateLoading().start();
             changeButtonViews();
             switchChildFragments(this.containerViewId, createFragment());
         }

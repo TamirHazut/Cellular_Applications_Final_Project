@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layoutDirection="ltr">
 
     <LinearLayout
@@ -91,15 +92,14 @@
             android:orientation="vertical"
             android:baselineAligned="false"
             android:gravity="right"
-            android:weightSum="100">
+            android:padding="@dimen/_7sdp"
+            android:layout_marginRight="@dimen/_2sdp"
+            android:layout_gravity="center_horizontal">
             <ImageButton
                 android:id="@+id/main_IBT_next"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="60"
-                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_width="@dimen/_48sdp"
+                android:layout_height="@dimen/_48sdp"
                 android:background="@drawable/ic_baseline_arrow_forward_ios_24">
-
             </ImageButton>
         </LinearLayout>
     </LinearLayout>

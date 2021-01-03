@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 style="@style/Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
                 <AutoCompleteTextView
-                    android:id="@+id/guestslist_DDM_filters"
+                    android:id="@+id/tables_arrangement_DDM_filters"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none" />
@@ -32,7 +32,7 @@
             android:layout_height="0dp"
             android:layout_weight="80">
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/guestslist_RCV_list"
+                android:id="@+id/tables_arrangement_RCV_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             </androidx.recyclerview.widget.RecyclerView>
@@ -43,27 +43,13 @@
             android:layout_height="0dp"
             android:layout_weight="10"
             android:padding="@dimen/_8sdp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="100"
+            android:gravity="right">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
-                <android.widget.Button
-                    android:id="@+id/guestslist_BTN_sendinvites"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/style_btn_round_corners_blue"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="@dimen/_10sdp"
-                    android:textSize="@dimen/_12sdp"
-                    android:text="@string/btn_send_invites">
-                </android.widget.Button>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="50"
                 android:gravity="right"
                 android:weightSum="100"
                 android:orientation="horizontal">
@@ -73,7 +59,7 @@
                     android:layout_weight="30"
                     android:layout_marginRight="@dimen/_10sdp">
                     <ImageButton
-                        android:id="@+id/guestslist_IBT_add"
+                        android:id="@+id/tables_arrangement_IBT_add"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/ic_baseline_add_circle_24">

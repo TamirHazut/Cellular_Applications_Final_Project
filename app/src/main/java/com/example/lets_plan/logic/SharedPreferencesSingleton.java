@@ -3,6 +3,8 @@ package com.example.lets_plan.logic;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.lets_plan.logic.utils.Constants;
+
 public class SharedPreferencesSingleton {
     private static SharedPreferencesSingleton instance;
     private SharedPreferences prefs;

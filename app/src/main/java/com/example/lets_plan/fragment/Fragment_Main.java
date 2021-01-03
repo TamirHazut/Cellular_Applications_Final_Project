@@ -38,7 +38,6 @@ public class Fragment_Main extends Fragment_Container {
         this.main_RBT_signup = view.findViewById(R.id.main_RBT_signup);
         this.main_IBT_next = view.findViewById(R.id.main_IBT_next);
         setContainerViewId(R.id.main_LAY_form);
-
     }
 
     private void initViews() {

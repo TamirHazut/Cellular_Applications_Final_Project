@@ -2,11 +2,11 @@ package com.example.lets_plan.data;
 
 import java.util.Objects;
 
-public class Filter implements Comparable<Filter> {
+public class Category implements Comparable<Category> {
     private String name;
     private int count;
 
-    public Filter(String name, int count) {
+    public Category(String name, int count) {
         this.name = name;
         this.count = count;
     }
@@ -36,7 +36,7 @@ public class Filter implements Comparable<Filter> {
     }
 
     @Override
-    public int compareTo(Filter other) {
+    public int compareTo(Category other) {
         return this.getName().compareTo(other.getName());
     }
 
@@ -44,8 +44,8 @@ public class Filter implements Comparable<Filter> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Filter filter = (Filter) o;
-        return Objects.equals(name, filter.name);
+        Category category = (Category) o;
+        return Objects.equals(name, category.name);
     }
 
     @Override

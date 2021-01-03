@@ -3,9 +3,8 @@ package com.example.lets_plan.activity;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
-import com.example.lets_plan.logic.Constants;
+import com.example.lets_plan.logic.utils.Constants;
 
 
 public class Activity_Base extends AppCompatActivity {

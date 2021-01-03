@@ -1,34 +1,27 @@
 package com.example.lets_plan.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.example.lets_plan.R;
 
 public class Fragment_Actions extends Fragment_Container {
-    private RadioButton actions_RBT_guestslist;
-    private RadioButton actions_RBT_tablesarrangement;
-    private RadioButton actions_RBT_eventhall;
+    private RadioButton actions_RBT_guests_list;
+    private RadioButton actions_RBT_tables_arrangement;
+    private RadioButton actions_RBT_event_hall;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_actions, container, false);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         findViews(view);
         initViews();
+        return view;
     }
 
     @Override
@@ -43,62 +36,59 @@ public class Fragment_Actions extends Fragment_Container {
     }
 
     private void findViews(View view) {
-        this.actions_RBT_guestslist = view.findViewById(R.id.actions_RBT_guestslist);
-        this.actions_RBT_tablesarrangement = view.findViewById(R.id.actions_RBT_tablesarrangement);
-        this.actions_RBT_eventhall = view.findViewById(R.id.actions_RBT_eventhall);
+        this.actions_RBT_guests_list = view.findViewById(R.id.actions_RBT_guests_list);
+        this.actions_RBT_tables_arrangement = view.findViewById(R.id.actions_RBT_tables_arrangement);
+        this.actions_RBT_event_hall = view.findViewById(R.id.actions_RBT_event_hall);
         setContainerViewId(R.id.actions_LAY_view);
     }
 
     private void initViews() {
         setHasChildFragments(true);
-        this.actions_RBT_guestslist.setOnClickListener(new View.OnClickListener() {
+        this.actions_RBT_guests_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { changeCurrentView(); }
+        });
+        this.actions_RBT_tables_arrangement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeCurrentView();
             }
         });
-        this.actions_RBT_tablesarrangement.setOnClickListener(new View.OnClickListener() {
+        this.actions_RBT_event_hall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeCurrentView();
             }
         });
-        this.actions_RBT_eventhall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeCurrentView();
-            }
-        });
-        this.actions_RBT_guestslist.setChecked(true);
-        changeCurrentView();
+        this.actions_RBT_guests_list.setChecked(true);
     }
 
     @Override
     protected void changeButtonViews() {
-        if (this.actions_RBT_guestslist.isChecked()) {
-            this.actions_RBT_guestslist.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
-            this.actions_RBT_tablesarrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-            this.actions_RBT_eventhall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-        } else if (this.actions_RBT_tablesarrangement.isChecked()) {
-            this.actions_RBT_guestslist.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-            this.actions_RBT_tablesarrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
-            this.actions_RBT_eventhall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-        } else if (this.actions_RBT_eventhall.isChecked()) {
-            this.actions_RBT_guestslist.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-            this.actions_RBT_tablesarrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
-            this.actions_RBT_eventhall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
+        if (this.actions_RBT_guests_list.isChecked()) {
+            this.actions_RBT_guests_list.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
+            this.actions_RBT_tables_arrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
+            this.actions_RBT_event_hall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
+        } else if (this.actions_RBT_tables_arrangement.isChecked()) {
+            this.actions_RBT_guests_list.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
+            this.actions_RBT_tables_arrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
+            this.actions_RBT_event_hall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
+        } else if (this.actions_RBT_event_hall.isChecked()) {
+            this.actions_RBT_guests_list.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
+            this.actions_RBT_tables_arrangement.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.black));
+            this.actions_RBT_event_hall.setTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.white));
         }
     }
 
     @Override
     protected Fragment_Base createFragment() {
         Fragment_Base fragment = null;
-        if (this.actions_RBT_guestslist.isChecked()) {
-            fragment = new Fragment_Guestslist();
-        } else if (this.actions_RBT_tablesarrangement.isChecked()) {
-//            fragment = new Fragment_TablesArrangement();
-        } else if (this.actions_RBT_eventhall.isChecked()) {
-//            fragment = new Fragment_EventHall();
+        if (this.actions_RBT_guests_list.isChecked()) {
+            fragment = new Fragment_Guests_List();
+        } else if (this.actions_RBT_tables_arrangement.isChecked()) {
+            fragment = new Fragment_Tables_Arrangement();
+        } else if (this.actions_RBT_event_hall.isChecked()) {
+//            fragment = new Fragment_Event_Hall();
         }
         return fragment;
     }

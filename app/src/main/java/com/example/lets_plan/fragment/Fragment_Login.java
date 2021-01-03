@@ -1,6 +1,7 @@
 package com.example.lets_plan.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import com.example.lets_plan.R;
 import com.example.lets_plan.data.User;
+import com.example.lets_plan.logic.DataHandler;
 
 public class Fragment_Login extends Fragment_Base {
     private EditText signup_EDT_email;
@@ -32,6 +34,7 @@ public class Fragment_Login extends Fragment_Base {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
         initViews();
+        DataHandler.getInstance().getRotateLoading().stop();
     }
 
     private void findViews(View view) {
@@ -44,7 +47,12 @@ public class Fragment_Login extends Fragment_Base {
     }
 
     public User getUser() {
-        return new User().setEmail(this.signup_EDT_email.getText().toString())
-                .setPassword(this.login_EDT_password.getText().toString());
+        String email = this.signup_EDT_email.getText().toString();
+        String password = this.login_EDT_password.getText().toString();
+        if (!email.isEmpty() && !password.isEmpty()) {
+            return new User().setEmail(this.signup_EDT_email.getText().toString())
+                    .setPassword(this.login_EDT_password.getText().toString());
+        }
+        return null;
     }
 }

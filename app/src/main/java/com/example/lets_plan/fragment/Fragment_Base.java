@@ -36,8 +36,17 @@ public abstract class Fragment_Base extends Fragment {
         editor.putString(key, value).apply();
     }
 
+    protected void saveToSharedPreferences(String key, Boolean value) {
+        SharedPreferences.Editor editor = SharedPreferencesSingleton.getInstance().getPrefs().edit();
+        editor.putBoolean(key, value).apply();
+    }
+
     protected String getFromSharedPreferences(String key, String defValue) {
         return SharedPreferencesSingleton.getInstance().getPrefs().getString(key, defValue);
+    }
+
+    protected Boolean getFromSharedPreferences(String key, Boolean defValue) {
+        return SharedPreferencesSingleton.getInstance().getPrefs().getBoolean(key, defValue);
     }
 
     protected String toJson(Object o, Type type) {

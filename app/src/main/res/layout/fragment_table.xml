@@ -19,7 +19,7 @@
                 android:layout_weight="1"
                 android:textSize="@dimen/title_text_size"
                 android:textColor="@color/black"
-                android:text="@string/guest_configuration"
+                android:text="@string/table_configuration"
                 android:gravity="center" />
         </LinearLayout>
         <LinearLayout
@@ -33,29 +33,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/_2sdp">
                 <EditText
-                    android:id="@+id/guest_EDT_full_name"
+                    android:id="@+id/table_EDT_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:inputType="text"
                     android:textSize="@dimen/_16sdp"
                     android:padding="@dimen/_10sdp"
-                    android:hint="@string/fullname"
-                    android:background="@drawable/style_edt_round_corners_with_border" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/_2sdp">
-                <EditText
-                    android:id="@+id/guest_EDT_phone_number"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:inputType="phone"
-                    android:textSize="@dimen/_16sdp"
-                    android:padding="@dimen/_10sdp"
-                    android:hint="@string/phonenumber"
+                    android:hint="@string/table_name"
                     android:background="@drawable/style_edt_round_corners_with_border" />
             </LinearLayout>
             <LinearLayout
@@ -67,11 +52,11 @@
                     android:layout_height="match_parent"
                     style="@style/Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
                     <AutoCompleteTextView
-                        android:id="@+id/guest_DDM_number_of_guests"
+                        android:id="@+id/table_DDM_max_capacity"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:inputType="none"
-                        android:hint="@string/number_of_guests_prompt"/>
+                        android:hint="@string/table_max"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -85,29 +70,22 @@
                     android:layout_height="match_parent"
                     style="@style/Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
                     <AutoCompleteTextView
-                        android:id="@+id/guest_DDM_categories"
+                        android:id="@+id/table_DDM_categories"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:inputType="none"
                         android:hint="@string/category_prompt"/>
-
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginVertical="@dimen/_2sdp">
-                <EditText
-                    android:id="@+id/guest_EDT_new_category"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/table_RCV_guests_list"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:inputType="text"
-                    android:textSize="@dimen/_16sdp"
-                    android:padding="@dimen/_10sdp"
-                    android:hint="@string/new_category"
-                    android:visibility="invisible"
-                    android:background="@drawable/style_edt_round_corners_with_border" />
+                    android:layout_height="match_parent">
+                </androidx.recyclerview.widget.RecyclerView>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -122,7 +100,7 @@
                 android:layout_weight="1"
                 android:layout_marginHorizontal="@dimen/_4sdp">
                 <android.widget.Button
-                    android:id="@+id/guest_BTN_save"
+                    android:id="@+id/table_BTN_save"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/btn_save"
@@ -137,10 +115,10 @@
                 android:layout_weight="1"
                 android:layout_marginHorizontal="@dimen/_4sdp">
                 <android.widget.Button
-                    android:id="@+id/guest_BTN_cancel"
+                    android:id="@+id/table_BTN_delete"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/btn_cancel"
+                    android:text="@string/btn_delete"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp"
                     android:background="@drawable/style_btn_round_corners_red">

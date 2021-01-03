@@ -56,6 +56,9 @@ dependencies {
     // Material.io
     implementation 'com.google.android.material:material:1.2.1'
 
+    // Loaders
+    implementation 'com.victor:lib:1.0.4'
+
     // Test
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

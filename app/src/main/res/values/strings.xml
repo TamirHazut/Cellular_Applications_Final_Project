@@ -8,6 +8,7 @@
     <string name="btn_eventhall">Event Hall</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
+    <string name="btn_delete">Delete</string>
     <string name="fullname">Full name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -16,4 +17,8 @@
     <string name="guest_configuration">Guest Configuration</string>
     <string name="category_prompt">Category</string>
     <string name="number_of_guests_prompt">How many guests</string>
+    <string name="table_configuration">Table Configuration</string>
+    <string name="table_max">Table max</string>
+    <string name="table_name">Table name</string>
+    <string name="table_capacity">0/0</string>
 </resources>

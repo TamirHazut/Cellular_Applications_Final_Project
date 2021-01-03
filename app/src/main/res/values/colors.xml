@@ -28,7 +28,10 @@
 
     <color name="listitem_fullname">#191919</color>
     <color name="listitem_category">#505050</color>
+    <color name="listitem_background">#8FA3BA</color>
 
     <color name="mtrl_textinput_default_box_stroke_color">#025abf</color>
+
+    <color name="loader">#1697FD</color>
 
 </resources>
