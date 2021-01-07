@@ -12,10 +12,9 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.example.lets_plan.R;
-import com.example.lets_plan.data.Guest;
 import com.example.lets_plan.data.Table;
 import com.example.lets_plan.logic.DataHandler;
-import com.example.lets_plan.logic.recyclerview.adapter.TablesarrangementRecyclerViewAdapter.TableViewHolder;
+import com.example.lets_plan.logic.recyclerview.adapter.TableViewAdapter.TableViewHolder;
 import com.example.lets_plan.logic.callback.ItemClickListener;
 import com.example.lets_plan.logic.utils.Constants;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -23,14 +22,16 @@ import com.google.android.material.imageview.ShapeableImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TablesarrangementRecyclerViewAdapter extends Adapter<TableViewHolder> implements Filterable {
-    private List<Table> allTables;
+import static java.lang.String.*;
+
+public class TableViewAdapter extends Adapter<TableViewHolder> implements Filterable {
+    private final List<Table> allTables;
     private List<Table> filteredTables;
     private final TableFilter filter;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
-    public TablesarrangementRecyclerViewAdapter(List<Table> allTables) {
+    public TableViewAdapter(List<Table> allTables) {
         this.allTables = allTables;
         this.filteredTables = allTables;
         this.filter = new TableFilter();
@@ -48,8 +49,7 @@ public class TablesarrangementRecyclerViewAdapter extends Adapter<TableViewHolde
     public void onBindViewHolder(@NonNull TableViewHolder holder, int position) {
         Table table = filteredTables.get(position);
         holder.listitem_TXT_name.setText(table.getName());
-        holder.listitem_TXT_capacity.setText(
-                table.sum() + "/" + table.getMaxCapacity().toString());
+        holder.listitem_TXT_capacity.setText(format("%d/%d", Table.sumGuests(table), table.getMaxCapacity()));
         holder.listitem_TXT_category.setText(table.getCategory());
     }
 
@@ -72,27 +72,27 @@ public class TablesarrangementRecyclerViewAdapter extends Adapter<TableViewHolde
         this.mClickListener = itemClickListener;
     }
 
-    public void updateTables(String filter) {
+    public void updateList(String filter) {
         getFilter().filter(filter);
     }
 
-    public void setAllTables(List<Table> tables) {
-        this.allTables = tables;
-        updateTables(Constants.ALL);
-    }
-
-    public void removeTable(Table table) {
-        int position = 0;
-        for (; position < allTables.size(); position++) {
-            if (allTables.get(position).equals(table)) {
-                break;
-            }
-        }
-        allTables.remove(table);
-        updateTables(Constants.ALL);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, filteredTables.size());
-    }
+//    public void setAllTables(List<Table> tables) {
+//        this.allTables = tables;
+//        updateList(Constants.ALL);
+//    }
+//
+//    public void removeTable(Table table) {
+//        int position = 0;
+//        for (; position < allTables.size(); position++) {
+//            if (allTables.get(position).equals(table)) {
+//                break;
+//            }
+//        }
+//        allTables.remove(table);
+//        updateList(Constants.ALL);
+//        notifyItemRemoved(position);
+//        notifyItemRangeChanged(position, filteredTables.size());
+//    }
 
     @Override
     public Filter getFilter() {

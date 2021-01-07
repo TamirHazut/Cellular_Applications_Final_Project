@@ -8,205 +8,165 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lets_plan.data.Category;
 import com.example.lets_plan.data.Guest;
+import com.example.lets_plan.logic.callback.DataReadyInterface;
 import com.example.lets_plan.logic.utils.Constants;
 import com.example.lets_plan.logic.DataHandler;
-import com.example.lets_plan.logic.callback.DataReadyInterface;
-import com.example.lets_plan.logic.callback.DataClickedListener;
 import com.example.lets_plan.logic.callback.ItemClickListener;
-import com.example.lets_plan.logic.recyclerview.adapter.GuestslistRecyclerViewAdapter;
+import com.example.lets_plan.logic.recyclerview.adapter.GuestViewAdapter;
 import com.example.lets_plan.logic.utils.Converter;
+import com.example.lets_plan.logic.utils.DataType;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
-public class GuestslistHandler {
+public class GuestslistHandler extends ItemsHandler<Guest> {
     // Recyclerview + Adapter
-    private RecyclerView guests_list_RCV_list;
-    private GuestslistRecyclerViewAdapter guestslistAdapter;
-    private boolean changeItemBackgroundOnClick;
-    // Data
-    private Map<Category, Set<Guest>> guestslist;
-    private int totalGuests;
-    // Callbacks
-    private DataReadyInterface dataReadyInterface;
-    private DataClickedListener<Guest> dataClickedListener;
+    private GuestViewAdapter guestslistAdapter;
 
     public GuestslistHandler() {
-        this.guestslist = new TreeMap<>();
-        loadGuestsList();
+        loadList();
     }
 
-    public void loadGuestsList() {
-        if (DataHandler.getInstance().getOwnerID() != null && !DataHandler.getInstance().getOwnerID().isEmpty()) {
-            FirebaseFirestore.getInstance()
-                    .collection(Constants.USERS_COLLECTION)
-                    .document(DataHandler.getInstance().getOwnerID())
-                    .collection(Constants.GUESTS_COLLECTION)
-                    .get()
-                    .addOnSuccessListener(task -> {
-                        task.forEach(snapshot -> {
-                            addGuestToList(Converter.mapToObject(snapshot.getData(), Guest.class));
-                            if (dataReadyInterface != null) {
-                                dataReadyInterface.dataReady();
-                                initRecyclerViewAdapter(DataHandler.getInstance().getContext(), Constants.ALL, null);
-                            }
-                        });
-                    });
-        }
-    }
-    public void initRecyclerViewAdapter(Context context, String filter, List<Guest> guests) {
-        setAdapter(getAllGuests(), filter, guests);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        this.guests_list_RCV_list.setLayoutManager(layoutManager);
-        this.guests_list_RCV_list.swapAdapter(this.guestslistAdapter, false);
-    }
-
-    public void setAdapter(List<Guest> filteredList, String filter, List<Guest> guests) {
-        this.guestslistAdapter = new GuestslistRecyclerViewAdapter(filteredList, changeItemBackgroundOnClick, guests);
-        updateGuestsList(filter);
-        guestslistAdapter.setClickListener(new ItemClickListener() {
+    @Override
+    public void loadList() {
+        DataHandler.getInstance().setGuestsDataReady(new DataReadyInterface() {
             @Override
-            public void onItemClick(View view, int position) {
-                dataClickedListener.dataClicked(guestslistAdapter.getItem(position));
+            public void dataReady() {
+                if (getDataReadyInterface() != null) {
+                    getDataReadyInterface().dataReady();
+                    initAdapter(Constants.ALL);
+                }
             }
         });
     }
 
-    public void setChangeItemBackgroundOnClick(boolean answer) {
-        this.changeItemBackgroundOnClick = answer;
-    }
-
-    private void addGuestToList(Guest guest) {
-        if (guest == null){
-            return;
-        }
-        Category tempCategory = new Category(guest.getCategory(), 0);
-        if (this.guestslist.containsKey(tempCategory)) {
-            Category category = this.guestslist.keySet().stream().filter(tempCategory::equals).findAny().orElseThrow(() -> new RuntimeException("Filter not found"));
-            category.addCount(guest.getNumberOfGuests().intValue());
-            this.guestslist.get(category).add(guest);
-        } else {
-            addGuestToNewList(tempCategory, guest);
-        }
-    }
-
-    private void addGuestToNewList(Category category, Guest guest) {
-        Set<Guest> newFilteredSet = new TreeSet<>();
-        newFilteredSet.add(guest);
-        category.addCount(guest.getNumberOfGuests().intValue());
-        this.guestslist.put(category, newFilteredSet);
-    }
-
-
-    public void addNewGuest(Guest guest) {
-        addGuestToList(guest);
+    @Override
+    public void saveItem(Guest item) {
         FirebaseFirestore.getInstance()
                 .collection(Constants.USERS_COLLECTION)
                 .document(DataHandler.getInstance().getOwnerID())
                 .collection(Constants.GUESTS_COLLECTION)
-                .document(guest.getPhoneNumber())
-                .set(guest);
+                .document(item.getPhoneNumber())
+                .set(item);
     }
 
-    public void updateGuest(Guest oldGuest, Guest guest) {
-        FirebaseFirestore.getInstance()
-                .collection(Constants.USERS_COLLECTION)
-                .document(DataHandler.getInstance().getOwnerID())
-                .collection(Constants.GUESTS_COLLECTION)
-                .document(guest.getPhoneNumber())
-                .update(Converter.objectToMap(guest));
+    @Override
+    public void updateItem(Guest oldGuest, Guest newGuest) {
         Set<Guest> filteredGuests;
         Category category;
         // Change category
-        boolean isCategoryChanges = !oldGuest.getCategory().equals(guest.getCategory());
+        boolean isCategoryChanges = !oldGuest.getCategory().equals(newGuest.getCategory());
         if (isCategoryChanges) {
-            int oldFilterIndex = getFilterIndex(oldGuest.getCategory());
+            int oldFilterIndex = findCategoryIndexByName(oldGuest.getCategory());
             if (oldFilterIndex != -1) {
-                category = getFilterValues().get(oldFilterIndex);
-                filteredGuests = getFilteredList(category.getName());
+                category = getAllCategories().get(oldFilterIndex);
+                filteredGuests = DataHandler.getInstance().findGuestsByCategory(category.getName());
                 filteredGuests.remove(oldGuest);
                 category.substractCount(oldGuest.getNumberOfGuests().intValue());
                 if (filteredGuests.isEmpty()) {
-                    this.guestslist.remove(category);
+                    DataHandler.getInstance().removeCategory(category.getName());
                 }
             }
         }
-        int filterIndex = getFilterIndex(guest.getCategory());
+        int filterIndex = findCategoryIndexByName(newGuest.getCategory());
         if (filterIndex != -1) {
-            category = getFilterValues().get(filterIndex);
-            filteredGuests = getFilteredList(category.getName());
+            category = getAllCategories().get(filterIndex);
+            filteredGuests = DataHandler.getInstance().findGuestsByCategory(category.getName());
             if (!isCategoryChanges) {
-                Guest guestToUpdate = filteredGuests.stream().filter(e -> e.compareTo(guest) == 0).findAny().get();
-                guestToUpdate.copyData(guest);
-                category.substractCount(oldGuest.getNumberOfGuests().intValue());
-                category.addCount(guestToUpdate.getNumberOfGuests().intValue());
+                Guest guestToUpdate = filteredGuests.stream().filter(e -> e.compareTo(newGuest) == 0).findAny().orElse(null);
+                if (guestToUpdate != null) {
+                    guestToUpdate.copyData(newGuest);
+                    category.substractCount(oldGuest.getNumberOfGuests().intValue());
+                    category.addCount(guestToUpdate.getNumberOfGuests().intValue());
+                }
             } else {
-                addGuestToList(guest);
+                addNewItem(newGuest);
             }
         } else {
-            addGuestToNewList(new Category(guest.getCategory(), 0), guest);
+            Category newCategory = createNewCategory(newGuest.getCategory());
+            DataHandler.getInstance().addItem(DataType.GUEST, newCategory.getName(), newGuest);
+        }
+        FirebaseFirestore.getInstance()
+                .collection(Constants.USERS_COLLECTION)
+                .document(DataHandler.getInstance().getOwnerID())
+                .collection(Constants.GUESTS_COLLECTION)
+                .document(newGuest.getPhoneNumber())
+                .update(Converter.objectToMap(newGuest));
+    }
+
+    @Override
+    public void initRecyclerView(Context context, String category) {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        getRcvList().setLayoutManager(layoutManager);
+        initAdapter(category);
+    }
+
+    @Override
+    public void setRecyclerView(RecyclerView rcv_list, Context context, String category) {
+        setRcvList(rcv_list);
+        initRecyclerView(context, category);
+    }
+
+    @Override
+    public void initAdapter(String category) {
+        List<Guest> guests = findItemsByCategoryName(category);
+        if (guests == null || guests.isEmpty()) {
+            return;
+        }
+        this.guestslistAdapter = new GuestViewAdapter(new ArrayList<>(guests));
+        guestslistAdapter.setClickListener(new ItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                getDataClickedListener().dataClicked(guestslistAdapter.getItem(position));
+            }
+        });
+        getRcvList().swapAdapter(this.guestslistAdapter, false);
+    }
+
+    @Override
+    public void updateList(String filter) {
+        if (getRcvList() != null && this.guestslistAdapter != null) {
+            this.guestslistAdapter.updateList(filter);
         }
     }
 
-    public Set<Guest> getFilteredList(String category) {
-        Category temp = new Category(category, 0);
+    @Override
+    public void addNewItem(Guest guest) {
+        if (guest == null){
+            return;
+        }
+        Category category = DataHandler.getInstance().findCategoryByName(guest.getCategory());
+        if (category == null) {
+            category = createNewCategory(guest.getCategory());
+        }
+        category.addCount(guest.getNumberOfGuests().intValue());
+        DataHandler.getInstance().addItem(DataType.GUEST, category.getName(), guest);
+    }
+
+    @Override
+    public List<Guest> findItemsByCategoryName(String category) {
         if (category.equals(Constants.ALL)) {
-            Set<Guest> allGuests = new TreeSet<>();
-            guestslist.values().forEach(allGuests::addAll);
-            return allGuests;
-        } else if (guestslist.containsKey(temp)) {
-            return guestslist.get(temp);
-        } else {
-            return null;
+            return DataHandler.getInstance().getAllGuests();
         }
+        return new ArrayList<>(DataHandler.getInstance().findGuestsByCategory(category));
     }
 
-    public List<Category> getFilterValues() {
-        return new ArrayList<>(this.guestslist.keySet());
+    @Override
+    public Category getSummedCategory() {
+        setTotalItems(0);
+        DataHandler.getInstance().getAllGuests().forEach(guest -> setTotalItems(getTotalItems() + guest.getNumberOfGuests().intValue()));
+        return new Category(Constants.ALL, getTotalItems());
     }
 
-    public int getFilterIndex(String filter) {
-        return getFilterValues().indexOf(new Category(filter, 0));
+    protected GuestViewAdapter getGuestslistAdapter() {
+        return guestslistAdapter;
     }
 
-    public Category getTotalFilter() {
-        totalGuests = 0;
-        this.guestslist.values().forEach(list -> list.forEach(guest -> totalGuests += guest.getNumberOfGuests()));
-        return new Category(Constants.ALL, totalGuests);
+    protected void setGuestslistAdapter(GuestViewAdapter guestslistAdapter) {
+        this.guestslistAdapter = guestslistAdapter;
     }
 
-    private List<Guest> getAllGuests() {
-        return this.guestslist.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    public void updateGuestsList(String filter) {
-        if (this.guests_list_RCV_list != null && this.guestslistAdapter != null) {
-            this.guestslistAdapter.updateGuestList(filter);
-        }
-    }
-
-    public void setDataReadyInterface(DataReadyInterface dataReadyInterface) {
-        this.dataReadyInterface = dataReadyInterface;
-    }
-
-    public void setDataClickedListener(DataClickedListener dataClickedListener) {
-        this.dataClickedListener = dataClickedListener;
-    }
-
-    public void setGuestslistRecyclerView(RecyclerView guests_list_RCV_list, Context context, String category) {
-        setGuestslistRecyclerView(guests_list_RCV_list, context, category, null);
-    }
-
-    public void setGuestslistRecyclerView(RecyclerView guests_list_RCV_list, Context context, String category, List<Guest> guests) {
-        this.guests_list_RCV_list = guests_list_RCV_list;
-        initRecyclerViewAdapter(context, category, guests);
-    }
 }

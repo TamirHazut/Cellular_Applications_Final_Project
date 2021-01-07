@@ -3,12 +3,14 @@ package com.example.lets_plan.fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.lets_plan.logic.DataHandler;
 import com.example.lets_plan.logic.SharedPreferencesSingleton;
 import com.google.gson.Gson;
 
@@ -30,6 +32,13 @@ public abstract class Fragment_Base extends Fragment {
         setRetainInstance(true);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (DataHandler.getInstance().getRotateLoading().isStart()) {
+            DataHandler.getInstance().getRotateLoading().stop();
+        }
+    }
 
     protected void saveToSharedPreferences(String key, String value) {
         SharedPreferences.Editor editor = SharedPreferencesSingleton.getInstance().getPrefs().edit();
@@ -57,7 +66,11 @@ public abstract class Fragment_Base extends Fragment {
     }
 
     protected <T> T fromJson(String json, Type type) {
-        return this.gson.fromJson(json, type);
+        try {
+            return this.gson.fromJson(json, type);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     protected void switchParentFragment(int containerViewId, Fragment_Base fragment, boolean addToBackStack) {

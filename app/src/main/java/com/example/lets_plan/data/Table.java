@@ -2,6 +2,7 @@ package com.example.lets_plan.data;
 
 import android.util.Log;
 
+import com.example.lets_plan.logic.DataHandler;
 import com.example.lets_plan.logic.utils.Converter;
 import com.google.common.collect.Iterables;
 
@@ -17,7 +18,7 @@ public class Table implements Comparable<Table> {
     private String name;
     private Long maxCapacity;
     private String category;
-    private List<Guest> guests;
+    private List<String> guests;
 
     public Table() {
         this.guests = new ArrayList<>();
@@ -28,7 +29,7 @@ public class Table implements Comparable<Table> {
         this.name = other.getName();
         this.maxCapacity = other.getMaxCapacity();
         this.category = other.getCategory();
-        this.guests = other.getGuests();
+        this.guests = new ArrayList<>(other.getGuests());
     }
 
     public String getName() {
@@ -53,16 +54,12 @@ public class Table implements Comparable<Table> {
         this.category = category;
     }
 
-    public List<Guest> getGuests() {
+    public List<String> getGuests() {
         return guests;
     }
 
-    public <T>  void setGuests(Collection<T> guests) {
-        if (!guests.isEmpty() && Iterables.get(guests, 0) instanceof Map) {
-            this.guests = guests.stream().map(guest -> Converter.mapToObject((Map<String, Object>) guest, Guest.class)).collect(Collectors.toList());
-        } else {
-            this.guests = guests.stream().map(guest -> (Guest)guest).collect(Collectors.toList());
-        }
+    public void setGuests(List<String> guests) {
+        this.guests = guests;
     }
 
     @Override
@@ -91,9 +88,18 @@ public class Table implements Comparable<Table> {
         this.setGuests(table.getGuests());
     }
 
-    public long sum() {
+    public static long sumGuests(Table table) {
         final long[] sum = {0};
-        guests.stream().forEach(guest -> sum[0] += guest.getNumberOfGuests().longValue());
+        List<Guest> allGuests = DataHandler.getInstance().getAllGuests();
+        if (allGuests != null && !allGuests.isEmpty()) {
+            table.getGuests().stream().forEach(phone -> {
+                Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
+                if (guest != null && guest.getTable() != null && guest.getTable().equals(table.getName())) {
+                    sum[0] += guest.getNumberOfGuests().longValue();
+                }
+            });
+
+        }
         return sum[0];
     }
 }

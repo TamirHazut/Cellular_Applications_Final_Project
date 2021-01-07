@@ -71,8 +71,8 @@ public class UserRepositorySingleton {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             currentUser = dbAuth.getCurrentUser();
-                            DataHandler.getInstance().setOwnerID(currentUser.getEmail());
-                            SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, currentUser.getEmail()).apply();
+                            DataHandler.getInstance().setOwnerID(currentUser.getUid());
+                            SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, currentUser.getUid()).apply();
                             dataReadyInterface.dataReady();
                             Toast.makeText(activity, Constants.LOGIN_SUCCESSFUL, Toast.LENGTH_SHORT).show();
                         } else {

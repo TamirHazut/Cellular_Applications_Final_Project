@@ -17,7 +17,7 @@ import com.example.lets_plan.data.Guest;
 import com.example.lets_plan.logic.utils.Constants;
 import com.example.lets_plan.logic.DataHandler;
 import com.example.lets_plan.logic.SharedPreferencesSingleton;
-import com.example.lets_plan.logic.recyclerview.adapter.GuestslistRecyclerViewAdapter.GuestViewHolder;
+import com.example.lets_plan.logic.recyclerview.adapter.GuestViewAdapter.GuestViewHolder;
 import com.example.lets_plan.logic.callback.ItemClickListener;
 import com.example.lets_plan.logic.utils.Converter;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -26,21 +26,25 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuestslistRecyclerViewAdapter extends Adapter<GuestViewHolder> implements Filterable {
-    private List<Guest> allGuests;
+public class GuestViewAdapter extends Adapter<GuestViewHolder> implements Filterable {
+    private final List<Guest> allGuests;
     private List<Guest> filteredGuests;
-    private List<Guest> checkedGuests;
-    private GuestFilter filter;
-    private LayoutInflater mInflater;
+    private final List<Guest> checkedGuests;
+    private final GuestFilter filter;
+    private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
-    private boolean changeViewHolderColorOnClick;
+    private final boolean hiddenCheckMark;
 
-    public GuestslistRecyclerViewAdapter(List<Guest> allGuests, boolean changeViewHolderColorOnClick, List<Guest> checkedGuests) {
+    public GuestViewAdapter(List<Guest> allGuests) {
+        this(allGuests, false, null);
+    }
+
+    public GuestViewAdapter(List<Guest> allGuests, boolean hiddenCheckMark, List<Guest> checkedGuests) {
         this.allGuests = allGuests;
         this.filteredGuests = allGuests;
         this.checkedGuests = checkedGuests;
         this.filter = new GuestFilter();
-        this.changeViewHolderColorOnClick = changeViewHolderColorOnClick;
+        this.hiddenCheckMark = hiddenCheckMark;
         this.mInflater = LayoutInflater.from(DataHandler.getInstance().getContext());
     }
 
@@ -48,7 +52,7 @@ public class GuestslistRecyclerViewAdapter extends Adapter<GuestViewHolder> impl
     @Override
     public GuestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.guests_list_recyclerview_listitem, parent, false);
-        return new GuestViewHolder(view, changeViewHolderColorOnClick);
+        return new GuestViewHolder(view);
     }
 
     @Override
@@ -56,10 +60,8 @@ public class GuestslistRecyclerViewAdapter extends Adapter<GuestViewHolder> impl
         Guest guest = filteredGuests.get(position);
         holder.listitem_TXT_fullname.setText(guest.toString());
         holder.listitem_TXT_category.setText(guest.getCategory());
-        if (checkedGuests != null && checkedGuests.contains(guest)) {
-            holder.setClicked(true);
-        } else {
-            holder.setClicked(false);
+        if (hiddenCheckMark) {
+            holder.setClicked(checkedGuests != null && checkedGuests.contains(guest));
         }
     }
 
@@ -71,34 +73,33 @@ public class GuestslistRecyclerViewAdapter extends Adapter<GuestViewHolder> impl
         return filteredGuests.size();
     }
 
-    public Guest getItem(int id) {
-        if (id < 0 || id >= getItemCount()) {
+    public Guest getItem(int index) {
+        if (index < 0 || index >= getItemCount()) {
             return null;
         }
-        return this.filteredGuests.get(id);
+        return this.filteredGuests.get(index);
     }
 
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
-    public void addGuest(int position, Guest guest) {
-        allGuests.add(guest);
-        notifyItemInserted(position);
-        notifyItemRangeChanged(position, allGuests.size());
-    }
+//    public void addGuest(int position, Guest guest) {
+//        allGuests.add(guest);
+//        notifyItemInserted(position);
+//        notifyItemRangeChanged(position, allGuests.size());
+//    }
+//
+//    public void removeGuest(int position) {
+//        allGuests.remove(position);
+//        notifyItemRemoved(position);
+//        notifyItemRangeChanged(position, allGuests.size());
+//    }
 
-    public void removeGuest(int position) {
-        allGuests.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, allGuests.size());
-    }
-
-    public void updateGuestList(String filter) {
+    public void updateList(String filter) {
         getFilter().filter(filter);
     }
 
-    @Override
     public Filter getFilter() {
         return filter;
     }
@@ -109,21 +110,13 @@ public class GuestslistRecyclerViewAdapter extends Adapter<GuestViewHolder> impl
             String filterString = constraint.toString();
             FilterResults results = new FilterResults();
             final List<Guest> newList = new ArrayList<>();
-            if (filterString.equals(Constants.ALL)) {
+            if (filterString.equals(Constants.ALL) || (hiddenCheckMark && filterString.equals(Constants.OTHER_CATEGORY))) {
                 newList.addAll(allGuests);
             } else {
                 for (int i = 0; i < allGuests.size(); i++) {
                     Guest guest = allGuests.get(i);
                     if (guest.getCategory().equals(filterString)) {
                         newList.add(guest);
-                    } else {
-                        guest.setTable(null);
-                        FirebaseFirestore.getInstance()
-                                .collection(Constants.USERS_COLLECTION)
-                                .document(DataHandler.getInstance().getOwnerID())
-                                .collection(Constants.GUESTS_COLLECTION)
-                                .document(guest.getPhoneNumber())
-                                .update(Converter.objectToMap(guest));
                     }
                 }
             }
@@ -140,13 +133,13 @@ public class GuestslistRecyclerViewAdapter extends Adapter<GuestViewHolder> impl
     }
 
     public class GuestViewHolder extends ViewHolder {
-        private ShapeableImageView listitem_IMG_cover;
-        private TextView listitem_TXT_fullname;
-        private TextView listitem_TXT_category;
-        private ImageView listitem_IMG_check;
+        private final ShapeableImageView listitem_IMG_cover;
+        private final TextView listitem_TXT_fullname;
+        private final TextView listitem_TXT_category;
+        private final ImageView listitem_IMG_check;
         private boolean clicked;
 
-        public GuestViewHolder(@NonNull View itemView, boolean changeBackgroundOnClick) {
+        public GuestViewHolder(@NonNull View itemView) {
             super(itemView);
             this.listitem_IMG_cover = itemView.findViewById(R.id.guest_listitem_IMG_cover);
             this.listitem_TXT_fullname = itemView.findViewById(R.id.guest_listitem_TXT_fullname);
@@ -158,7 +151,7 @@ public class GuestslistRecyclerViewAdapter extends Adapter<GuestViewHolder> impl
                 public void onClick(View v) {
                     if (mClickListener != null) {
                         mClickListener.onItemClick(v, getAdapterPosition());
-                        if (changeBackgroundOnClick && SharedPreferencesSingleton.getInstance().getPrefs().getBoolean(Constants.VALID_GUEST, false)) {
+                        if (hiddenCheckMark && SharedPreferencesSingleton.getInstance().getPrefs().getBoolean(Constants.VALID_GUEST, false)) {
                             setClicked(!clicked);
                         }
                     }

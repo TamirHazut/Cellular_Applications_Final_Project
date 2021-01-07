@@ -16,19 +16,18 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lets_plan.R;
-import com.example.lets_plan.data.Category;
 import com.example.lets_plan.data.Guest;
 import com.example.lets_plan.data.Table;
+import com.example.lets_plan.logic.recyclerview.handler.ExtendedGuestslistHandler;
+import com.example.lets_plan.logic.recyclerview.handler.ItemsHandler;
 import com.example.lets_plan.logic.utils.Constants;
 import com.example.lets_plan.logic.DataHandler;
-import com.example.lets_plan.logic.recyclerview.adapter.GuestslistRecyclerViewAdapter;
 import com.example.lets_plan.logic.callback.DataClickedListener;
 import com.example.lets_plan.logic.callback.DataReadyInterface;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Objects;
 
 public class Fragment_Table extends Fragment_Base {
     private EditText table_EDT_name;
@@ -37,11 +36,14 @@ public class Fragment_Table extends Fragment_Base {
     private RecyclerView table_RCV_guests_list;
     private Button table_BTN_save;
     private Button table_BTN_delete;
+    private ItemsHandler<Guest> guestsItemsHandler;
+    private ItemsHandler<Table> tableItemsHandler;
     private Table currentTable;
     private Table oldTableData;
     private boolean newTable;
 
-    public Fragment_Table() {
+    public Fragment_Table(ItemsHandler<Table> tableItemsHandler) {
+        this.tableItemsHandler = tableItemsHandler;
     }
 
     @Nullable
@@ -50,16 +52,24 @@ public class Fragment_Table extends Fragment_Base {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_table, container, false);
         this.newTable = fromJson(getFromSharedPreferences(Constants.NEW_TABLE, "true"), Boolean.class);
+        List<Guest> currentGuests = new ArrayList<>();
         if (this.newTable) {
             this.currentTable = new Table();
-            this.currentTable.setMaxCapacity(new Long(Constants.MIN_TABLE_CAPACITY_OPTIONS));
-            this.currentTable.setCategory(Constants.ALL);
+            this.currentTable.setMaxCapacity(Long.valueOf(Constants.MIN_TABLE_CAPACITY_OPTIONS));
+            this.currentTable.setCategory(Constants.OTHER_CATEGORY);
             this.oldTableData = new Table();
-            this.currentTable.setCategory(Constants.ALL);
+            this.currentTable.setCategory(Constants.OTHER_CATEGORY);
         } else {
             this.oldTableData = fromJson(getFromSharedPreferences(Constants.CURRENT_TABLE, ""), Table.class);
             this.currentTable = new Table(oldTableData);
+            currentTable.getGuests().forEach(phone -> {
+                Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
+                if (guest != null) {
+                    currentGuests.add(guest);
+                }
+            });
         }
+        this.guestsItemsHandler = new ExtendedGuestslistHandler(true, currentGuests);
         return view;
     }
 
@@ -68,6 +78,10 @@ public class Fragment_Table extends Fragment_Base {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
         initViews();
+        updateDropdowns();
+        if (!newTable) {
+            guestsItemsHandler.updateList(currentTable.getCategory());
+        }
     }
 
     private void findViews(View view) {
@@ -81,10 +95,8 @@ public class Fragment_Table extends Fragment_Base {
 
     private void initViews() {
         updateDropdowns();
-        DataHandler.getInstance().initGuestslistHandler();
-        DataHandler.getInstance().getGuestslistHandler().setChangeItemBackgroundOnClick(true);
-        DataHandler.getInstance().getGuestslistHandler().setGuestslistRecyclerView(this.table_RCV_guests_list, getActivity().getApplicationContext(), currentTable.getCategory(), currentTable.getGuests());
-        DataHandler.getInstance().getGuestslistHandler().setDataReadyInterface(new DataReadyInterface() {
+        guestsItemsHandler.setRecyclerView(this.table_RCV_guests_list, Objects.requireNonNull(getActivity()).getApplicationContext(), Constants.ALL);
+        guestsItemsHandler.setDataReadyInterface(new DataReadyInterface() {
             @Override
             public void dataReady() {
                 updateDropdowns();
@@ -103,21 +115,21 @@ public class Fragment_Table extends Fragment_Base {
     }
 
     private void setButtonsClickListeners() {
-        DataHandler.getInstance().getGuestslistHandler().setDataClickedListener(new DataClickedListener<Guest>() {
+        guestsItemsHandler.setDataClickedListener(new DataClickedListener<Guest>() {
             @Override
             public void dataClicked(Guest guest) {
                 saveToSharedPreferences(Constants.VALID_GUEST, true);
-                if (currentTable.getGuests().contains(guest)) {
-                    currentTable.getGuests().remove(guest);
+                if (currentTable.getGuests().contains(guest.getPhoneNumber())) {
+                    currentTable.getGuests().remove(guest.getPhoneNumber());
                     guest.setTable(null);
                 } else if (guest.getTable() != null && !guest.getTable().isEmpty()) {
                     Toast.makeText(getActivity(), Constants.GUEST_ALREADY_IN_A_TABLE, Toast.LENGTH_LONG).show();
                     saveToSharedPreferences(Constants.VALID_GUEST, false);
-                } else if (currentTable.sum()+guest.getNumberOfGuests().longValue() > currentTable.getMaxCapacity().longValue()) {
+                } else if (Table.sumGuests(currentTable)+guest.getNumberOfGuests() > currentTable.getMaxCapacity()) {
                     Toast.makeText(getActivity(), Constants.TABLE_IS_FULL, Toast.LENGTH_LONG).show();
                     saveToSharedPreferences(Constants.VALID_GUEST, false);
                 } else {
-                    currentTable.getGuests().add(guest);
+                    currentTable.getGuests().add(guest.getPhoneNumber());
                     guest.setTable(currentTable.getName());
                 }
             }
@@ -134,11 +146,12 @@ public class Fragment_Table extends Fragment_Base {
                     setTableToGuests();
                 }
                 if (newTable) {
-                    DataHandler.getInstance().getTablesArrangementHandler().addNewTable(currentTable);
+                    tableItemsHandler.addNewItem(currentTable);
+                    tableItemsHandler.saveItem(currentTable);
                 } else {
-                    DataHandler.getInstance().getTablesArrangementHandler().updateTable(oldTableData, currentTable);
+                    tableItemsHandler.updateItem(oldTableData, currentTable);
                 }
-                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                 }
             }
@@ -146,7 +159,7 @@ public class Fragment_Table extends Fragment_Base {
         this.table_BTN_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                 }
             }
@@ -154,18 +167,23 @@ public class Fragment_Table extends Fragment_Base {
     }
 
     private void setTableToGuests() {
-        currentTable.getGuests().forEach(guest -> guest.setTable(currentTable.getName()));
+        currentTable.getGuests().forEach(phone -> {
+                    Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
+                    if (guest != null) {
+                        guest.setTable(currentTable.getName());
+                    }
+                });
     }
 
     private void updateDropdowns() {
         // Max capacity dropdown
         List<Long> numberList = new ArrayList<>();
         for (long i = Constants.MIN_TABLE_CAPACITY_OPTIONS; i <= Constants.MAX_TABLE_CAPACITY_OPTIONS; i++) {
-            numberList.add(new Long(i));
+            numberList.add(i);
         }
         this.table_DDM_max_capacity.setAdapter(
-                new ArrayAdapter<Long>(
-                        getActivity().getApplicationContext(),
+                new ArrayAdapter<>(
+                        Objects.requireNonNull(getActivity()).getApplicationContext(),
                         R.layout.dropdown_menu_list_item,
                         numberList)
         );
@@ -178,14 +196,14 @@ public class Fragment_Table extends Fragment_Base {
         });
 
         // Filters dropdown
-        List<String> filters = new ArrayList<>();
-        filters.add(Constants.ALL);
-        filters.addAll(DataHandler.getInstance().getGuestslistHandler().getFilterValues().stream().map(Category::getName).collect(Collectors.toList()));
-        this.table_DDM_categories.setAdapter(new ArrayAdapter<String>(
+        List<String> categories = new ArrayList<>(DataHandler.getInstance().getAllCategoriesNames());
+        categories.remove(Constants.ALL);
+        this.table_DDM_categories.setAdapter(new ArrayAdapter<>(
                 getActivity().getApplicationContext(),
                 R.layout.dropdown_menu_list_item,
-                filters
+                categories
         ));
+
         this.table_DDM_categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -196,16 +214,18 @@ public class Fragment_Table extends Fragment_Base {
     }
 
     private void updateGuestslistRecyclerView() {
-        if (!currentTable.getCategory().equals(Constants.ALL)) {
-            List<Guest> temp = new ArrayList<>();
-            currentTable.getGuests().stream().forEach(guest -> {
-                if (guest.getCategory().equals(currentTable.getCategory())) {
-                    temp.add(guest);
+        if (!currentTable.getCategory().equals(Constants.OTHER_CATEGORY)) {
+            List<String> temp = new ArrayList<>();
+            currentTable.getGuests().forEach(phone -> {
+                Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
+                if (guest != null && guest.getCategory().equals(currentTable.getCategory())) {
+                    temp.add(phone);
+                } else {
+                    guest.setTable(null);
                 }
             });
             currentTable.setGuests(temp);
         }
-
-        DataHandler.getInstance().getGuestslistHandler().updateGuestsList(currentTable.getCategory());
+        guestsItemsHandler.updateList(currentTable.getCategory());
     }
 }

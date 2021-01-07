@@ -14,8 +14,8 @@ public class Constants {
     public static final String LOGIN_SUCCESSFUL = "Login successfully";
     public static final int MAX_NUMBER_OF_GUESTS_OPTIONS = 10;
     public static final int MAX_TABLE_CAPACITY_OPTIONS = 14;
-    public static final long MIN_NUMBER_OF_GUESTS_OPTIONS = 1;
-    public static final long MIN_TABLE_CAPACITY_OPTIONS = 6;
+    public static final int MIN_NUMBER_OF_GUESTS_OPTIONS = 1;
+    public static final int MIN_TABLE_CAPACITY_OPTIONS = 6;
     public static final String NEW_GUEST = "NEW_GUEST";
     public static final String NEW_TABLE = "NEW_TABLE";
     public static final String OTHER_CATEGORY = "Other";

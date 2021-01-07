@@ -1,6 +1,7 @@
 package com.example.lets_plan.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,19 +11,23 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.lets_plan.R;
-import com.example.lets_plan.data.Category;
 import com.example.lets_plan.data.Guest;
+import com.example.lets_plan.data.Table;
+import com.example.lets_plan.logic.recyclerview.handler.ItemsHandler;
 import com.example.lets_plan.logic.utils.Constants;
 import com.example.lets_plan.logic.DataHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+
+import static java.lang.String.*;
 
 public class Fragment_Guest extends Fragment_Base {
     private EditText guest_EDT_full_name;
@@ -32,11 +37,13 @@ public class Fragment_Guest extends Fragment_Base {
     private EditText guest_EDT_new_category;
     private Button guest_BTN_save;
     private Button guest_BTN_cancel;
+    private final ItemsHandler<Guest> itemsHandler;
     private Guest currentGuest;
     private Guest oldGuestData;
     private boolean newGuest;
 
-    public Fragment_Guest() {
+    public Fragment_Guest(ItemsHandler<Guest> itemsHandler) {
+        this.itemsHandler = itemsHandler;
     }
 
     @Nullable
@@ -47,9 +54,9 @@ public class Fragment_Guest extends Fragment_Base {
         this.newGuest = fromJson(getFromSharedPreferences(Constants.NEW_GUEST, "true"), Boolean.class);
         if (this.newGuest) {
             this.currentGuest = new Guest();
-            this.currentGuest.setNumberOfGuests(Constants.MIN_NUMBER_OF_GUESTS_OPTIONS);
+            this.currentGuest.setNumberOfGuests((long) Constants.MIN_NUMBER_OF_GUESTS_OPTIONS);
             this.oldGuestData = new Guest();
-            this.oldGuestData.setNumberOfGuests(Constants.MIN_NUMBER_OF_GUESTS_OPTIONS);
+            this.oldGuestData.setNumberOfGuests((long) Constants.MIN_NUMBER_OF_GUESTS_OPTIONS);
         } else {
             this.currentGuest = fromJson(getFromSharedPreferences(Constants.CURRENT_GUEST, ""), Guest.class);
             this.oldGuestData = new Guest(currentGuest);
@@ -76,45 +83,55 @@ public class Fragment_Guest extends Fragment_Base {
 
     private void initViews() {
         updateDropdowns();
-        if (currentGuest.getFullname() != null && !currentGuest.getFullname().isEmpty()) {
-            this.guest_EDT_full_name.setText(currentGuest.getFullname());
+        if (!newGuest) {
+            if (currentGuest.getFullname() != null && !currentGuest.getFullname().isEmpty()) {
+                this.guest_EDT_full_name.setText(currentGuest.getFullname());
+            }
+            if (currentGuest.getPhoneNumber() != null && !currentGuest.getPhoneNumber().isEmpty()) {
+                this.guest_EDT_phone_number.setText(currentGuest.getPhoneNumber());
+                this.guest_EDT_phone_number.setEnabled(false);
+                this.guest_EDT_phone_number.setInputType(EditorInfo.TYPE_NULL);
+            }
+            this.guest_DDM_number_of_guests.setText(String.valueOf(currentGuest.getNumberOfGuests()), false);
+            if (currentGuest.getCategory() != null && !currentGuest.getCategory().isEmpty()) {
+                this.guest_DDM_categories.setText(currentGuest.getCategory(), false);
+            }
         }
-        if (currentGuest.getPhoneNumber() != null && !currentGuest.getPhoneNumber().isEmpty()) {
-            this.guest_EDT_phone_number.setText(currentGuest.getPhoneNumber());
-            this.guest_EDT_phone_number.setEnabled(false);
-            this.guest_EDT_phone_number.setInputType(EditorInfo.TYPE_NULL);
-        }
-        if (currentGuest.getNumberOfGuests() != null) {
-            this.guest_DDM_number_of_guests.setText(currentGuest.getNumberOfGuests().toString(), false);
-        }
-        if (currentGuest.getCategory() != null && !currentGuest.getCategory().isEmpty()) {
-            this.guest_DDM_categories.setText(currentGuest.getCategory(), false);
-        }
+
         setButtonsClickListeners();
     }
 
     private void updateDropdowns() {
         // How many guests dropdown
         List<Long> numberList = new ArrayList<>();
-        for (long i = Constants.MIN_NUMBER_OF_GUESTS_OPTIONS; i <= Constants.MAX_NUMBER_OF_GUESTS_OPTIONS; i++) {
-            numberList.add(i);
+        for (int i = Constants.MIN_NUMBER_OF_GUESTS_OPTIONS; i <= Constants.MAX_NUMBER_OF_GUESTS_OPTIONS; i++) {
+            numberList.add((long) i);
         }
         this.guest_DDM_number_of_guests.setAdapter(
-                new ArrayAdapter<Long>(
-                        getActivity().getApplicationContext(),
+                new ArrayAdapter<>(
+                        Objects.requireNonNull(getActivity()).getApplicationContext(),
                         R.layout.dropdown_menu_list_item,
                         numberList)
         );
         this.guest_DDM_number_of_guests.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currentGuest.setNumberOfGuests((Long) parent.getItemAtPosition(position));
+                Long temp = (Long) parent.getItemAtPosition(position);
+                if (currentGuest.getTable() != null && !currentGuest.getTable().isEmpty()) {
+                    Table table = DataHandler.getInstance().findTableByCategoryAndName(currentGuest.getCategory(), currentGuest.getTable());
+                    if (Table.sumGuests(table)-currentGuest.getNumberOfGuests()+temp > table.getMaxCapacity()) {
+                        Toast.makeText(Objects.requireNonNull(getActivity()).getApplicationContext(), Constants.TABLE_IS_FULL, Toast.LENGTH_SHORT).show();
+                        guest_DDM_number_of_guests.setText(String.valueOf(currentGuest.getNumberOfGuests()));
+                        return;
+                    }
+                }
+                currentGuest.setNumberOfGuests(temp);
             }
         });
         // Filters dropdown
-        List<String> filters = DataHandler.getInstance().getGuestslistHandler().getFilterValues().stream().map(Category::getName).collect(Collectors.toList());
-        filters.add(Constants.OTHER_CATEGORY);
-        this.guest_DDM_categories.setAdapter(new ArrayAdapter<String>(
+        List<String> filters = new ArrayList<>(DataHandler.getInstance().getAllCategoriesNames());
+        filters.remove(Constants.ALL);
+        this.guest_DDM_categories.setAdapter(new ArrayAdapter<>(
                 getActivity().getApplicationContext(),
                 R.layout.dropdown_menu_list_item,
                 filters
@@ -123,16 +140,13 @@ public class Fragment_Guest extends Fragment_Base {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String filter = parent.getItemAtPosition(position).toString();
-                switch (filter) {
-                    case Constants.OTHER_CATEGORY:
-                        guest_EDT_new_category.setVisibility(View.VISIBLE);
-                        currentGuest.setCategory(null);
-                        break;
-                    default:
-                        guest_EDT_new_category.setText("");
-                        guest_EDT_new_category.setVisibility(View.INVISIBLE);
-                        currentGuest.setCategory(filter);
-                        break;
+                if (Constants.OTHER_CATEGORY.equals(filter)) {
+                    guest_EDT_new_category.setVisibility(View.VISIBLE);
+                    currentGuest.setCategory(null);
+                } else {
+                    guest_EDT_new_category.setText("");
+                    guest_EDT_new_category.setVisibility(View.INVISIBLE);
+                    currentGuest.setCategory(filter);
                 }
             }
         });
@@ -159,11 +173,12 @@ public class Fragment_Guest extends Fragment_Base {
                 }
                 if (newGuest) {
                     currentGuest.setPhoneNumber(phonenumber);
-                    DataHandler.getInstance().getGuestslistHandler().addNewGuest(currentGuest);
+                    itemsHandler.addNewItem(currentGuest);
+                    itemsHandler.saveItem(currentGuest);
                 } else {
-                    DataHandler.getInstance().getGuestslistHandler().updateGuest(oldGuestData, currentGuest);
+                    itemsHandler.updateItem(oldGuestData, currentGuest);
                 }
-                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                 }
             }
@@ -171,7 +186,7 @@ public class Fragment_Guest extends Fragment_Base {
         this.guest_BTN_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                 }
             }

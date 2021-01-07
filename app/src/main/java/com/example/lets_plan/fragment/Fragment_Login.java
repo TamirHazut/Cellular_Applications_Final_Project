@@ -34,7 +34,6 @@ public class Fragment_Login extends Fragment_Base {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
         initViews();
-        DataHandler.getInstance().getRotateLoading().stop();
     }
 
     private void findViews(View view) {

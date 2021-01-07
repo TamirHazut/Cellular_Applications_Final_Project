@@ -4,208 +4,202 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lets_plan.data.Category;
+import com.example.lets_plan.data.Guest;
 import com.example.lets_plan.data.Table;
+import com.example.lets_plan.logic.callback.DataReadyInterface;
 import com.example.lets_plan.logic.utils.Constants;
 import com.example.lets_plan.logic.DataHandler;
-import com.example.lets_plan.logic.callback.DataClickedListener;
-import com.example.lets_plan.logic.callback.DataReadyInterface;
 import com.example.lets_plan.logic.callback.ItemClickListener;
-import com.example.lets_plan.logic.recyclerview.adapter.TablesarrangementRecyclerViewAdapter;
+import com.example.lets_plan.logic.recyclerview.adapter.TableViewAdapter;
 import com.example.lets_plan.logic.utils.Converter;
+import com.example.lets_plan.logic.utils.DataType;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
-public class TablesArrangementHandler {
+public class TablesArrangementHandler extends ItemsHandler<Table> {
     // Recyclerview + Adapter
-    private RecyclerView tables_arrangement_RCV_list;
-    private TablesarrangementRecyclerViewAdapter tablesAdapter;
-    //Data
-    private Map<Category, Set<Table>> tables;
-    private DataReadyInterface dataReadyInterface;
-    private DataClickedListener<Table> dataClickedListener;
+    private TableViewAdapter tablesAdapter;
 
     public TablesArrangementHandler() {
-        this.tables = new TreeMap<>();
-        loadTables();
+        loadList();
     }
 
-    public void loadTables() {
-        if (DataHandler.getInstance().getOwnerID() != null && !DataHandler.getInstance().getOwnerID().isEmpty()) {
-            FirebaseFirestore.getInstance()
-                    .collection(Constants.USERS_COLLECTION)
-                    .document(DataHandler.getInstance().getOwnerID())
-                    .collection(Constants.TABLES_COLLECTION)
-                    .get()
-                    .addOnSuccessListener(task -> {
-                        task.forEach(snapshot -> {
-                            Table table = Converter.mapToObject(snapshot.getData(), Table.class);
-                            addTableToList(table);
-                            if (dataReadyInterface != null) {
-                                dataReadyInterface.dataReady();
-                                initRecyclerViewAdapter(DataHandler.getInstance().getContext(), Constants.ALL);
-                            }
-                        });
-                    });
-        }
-    }
-
-    public void initRecyclerViewAdapter(Context context, String filter) {
-        List<Table> filteredList = (filter.equals(Constants.ALL) ? getAllTables() : getFilteredList(filter).stream().collect(Collectors.toList()));
-        setAdapter(filteredList);
-        GridLayoutManager layoutManager = new GridLayoutManager(context, Constants.TABLES_IN_ROW);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        this.tables_arrangement_RCV_list.setLayoutManager(layoutManager);
-        this.tables_arrangement_RCV_list.swapAdapter(this.tablesAdapter, false);
-    }
-
-    public void setAdapter(List<Table> filteredList) {
-        this.tablesAdapter = new TablesarrangementRecyclerViewAdapter(filteredList);
-        tablesAdapter.setClickListener(new ItemClickListener() {
+    @Override
+    public void loadList() {
+        DataHandler.getInstance().setTablesDataReady(new DataReadyInterface() {
             @Override
-            public void onItemClick(View view, int position) {
-                dataClickedListener.dataClicked(tablesAdapter.getItem(position));
+            public void dataReady() {
+                if (getDataReadyInterface() != null) {
+                    getDataReadyInterface().dataReady();
+                    initAdapter(Constants.ALL);
+                }
             }
         });
     }
 
-    private void addTableToList(Table table) {
-        if (table == null){
-            return;
-        }
-        Category tempCategory = new Category(table.getCategory(), 0);
-        if (this.tables.containsKey(tempCategory)) {
-            tempCategory.addCount(1);
-            this.tables.get(tempCategory).add(table);
-        } else {
-            addTableToNewList(tempCategory, table);
-        }
-    }
-
-    private void addTableToNewList(Category category, Table table) {
-        Set<Table> newFilteredSet = new TreeSet<>();
-        category.addCount(1);
-        newFilteredSet.add(table);
-        this.tables.put(category, newFilteredSet);
-    }
-
-    public void addNewTable(Table table) {
-        addTableToList(table);
+    @Override
+    public void saveItem(Table table) {
         FirebaseFirestore.getInstance()
                 .collection(Constants.USERS_COLLECTION)
                 .document(DataHandler.getInstance().getOwnerID())
                 .collection(Constants.TABLES_COLLECTION)
                 .document(table.getName())
                 .set(table);
+        table.getGuests().forEach(phone -> {
+            Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
+            if (guest != null) {
+                FirebaseFirestore.getInstance()
+                        .collection(Constants.USERS_COLLECTION)
+                        .document(DataHandler.getInstance().getOwnerID())
+                        .collection(Constants.GUESTS_COLLECTION)
+                        .document(phone)
+                        .update(Converter.objectToMap(guest));
+            }
+        });
     }
 
-    public void updateTable(Table oldTable, Table table) {
+    @Override
+    public void updateItem(Table oldTable, Table newTable) {
+        Set<Table> filteredTables = new TreeSet<>();
+        Category category;
+        // Change category
+        boolean isCategoryChanges = !oldTable.getCategory().equals(newTable.getCategory());
+        if (isCategoryChanges) {
+            int oldFilterIndex = findCategoryIndexByName(oldTable.getCategory());
+            if (oldFilterIndex != -1) {
+                category = getAllCategories().get(oldFilterIndex);
+                filteredTables = DataHandler.getInstance().findTablesByCategory(category.getName());
+                category.substractCount(1);
+                filteredTables.remove(oldTable);
+                if (filteredTables.isEmpty()) {
+                    DataHandler.getInstance().removeCategory(category.getName());
+                }
+            }
+        }
+        int filterIndex = findCategoryIndexByName(newTable.getCategory());
+        if (filterIndex != -1) {
+            category = getAllCategories().get(filterIndex);
+            filteredTables = DataHandler.getInstance().findTablesByCategory(category.getName());
+        }
+        if (!isCategoryChanges) {
+            Table tableToUpdate = filteredTables.stream().filter(e -> e.compareTo(newTable) == 0).findAny().get();
+            tableToUpdate.copyData(newTable);
+        } else {
+            Category newCategory = createNewCategory(newTable.getCategory());
+            DataHandler.getInstance().addItem(DataType.TABLE, newCategory.getName(), newTable);
+        }
         FirebaseFirestore.getInstance()
                 .collection(Constants.USERS_COLLECTION)
                 .document(DataHandler.getInstance().getOwnerID())
                 .collection(Constants.TABLES_COLLECTION)
-                .document(table.getName())
-                .update(Converter.objectToMap(table));
-        table.getGuests().forEach(guest -> FirebaseFirestore.getInstance()
-                                                    .collection(Constants.USERS_COLLECTION)
-                                                    .document(DataHandler.getInstance().getOwnerID())
-                                                    .collection(Constants.GUESTS_COLLECTION)
-                                                    .document(guest.getPhoneNumber())
-                                                    .update(Converter.objectToMap(guest)));
-        Set<Table> filteredTables = new TreeSet<>();
-        Category category;
-        // Change category
-        boolean isCategoryChanges = !oldTable.getCategory().equals(table.getCategory());
-        if (isCategoryChanges) {
-            int oldFilterIndex = getFilterIndex(oldTable.getCategory());
-            if (oldFilterIndex != -1) {
-                category = getFilterValues().get(oldFilterIndex);
-                filteredTables = getFilteredList(category.getName());
-                category.substractCount(1);
-                filteredTables.remove(oldTable);
-                if (filteredTables.isEmpty()) {
-                    this.tables.remove(category);
-                }
+                .document(newTable.getName())
+                .update(Converter.objectToMap(newTable));
+        updateGuests(oldTable, newTable);
+    }
+
+    private void updateGuests(Table oldTable, Table newTable) {
+        // Create a collection of guests whose been changed
+        List<Guest> oldTableGuests = new ArrayList<>();
+        oldTable.getGuests().forEach(phone -> {
+            Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
+            oldTableGuests.add(guest);
+        });
+        List<Guest> newTableGuests = new ArrayList<>();
+        newTable.getGuests().forEach(phone -> {
+            Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
+            newTableGuests.add(guest);
+        });
+        Set<Guest> diff = new HashSet<>();
+
+        Set<Guest> diffOldToNew = new HashSet<>(oldTableGuests);
+        diffOldToNew.removeAll(newTableGuests);
+        diff.addAll(diffOldToNew);
+
+        Set<Guest> diffNewToOld = new HashSet<>(newTableGuests);
+        diffNewToOld.removeAll(oldTableGuests);
+        diff.addAll(diffNewToOld);
+
+        diff.forEach(guest -> FirebaseFirestore.getInstance()
+                        .collection(Constants.USERS_COLLECTION)
+                        .document(DataHandler.getInstance().getOwnerID())
+                        .collection(Constants.GUESTS_COLLECTION)
+                        .document(guest.getPhoneNumber())
+                        .update(Converter.objectToMap(guest)));
+    }
+
+    @Override
+    public void initRecyclerView(Context context, String category) {
+        GridLayoutManager layoutManager = new GridLayoutManager(context, Constants.TABLES_IN_ROW);
+        layoutManager.setOrientation(GridLayoutManager.VERTICAL);
+        getRcvList().setLayoutManager(layoutManager);
+        initAdapter(category);
+    }
+
+    @Override
+    public void setRecyclerView(RecyclerView rcv_list, Context context, String category) {
+        setRcvList(rcv_list);
+        initRecyclerView(context, category);
+    }
+
+    @Override
+    public void initAdapter(String category) {
+        List<Table> tables = findItemsByCategoryName(category);
+        if (tables == null || tables.isEmpty()) {
+            return;
+        }
+        this.tablesAdapter = new TableViewAdapter(tables);
+//        updateList(category);
+        tablesAdapter.setClickListener(new ItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                getDataClickedListener().dataClicked(tablesAdapter.getItem(position));
             }
-        }
-        int filterIndex = getFilterIndex(table.getCategory());
-        if (filterIndex != -1) {
-            category = getFilterValues().get(filterIndex);
-            filteredTables = getFilteredList(category.getName());
-        }
-        if (!isCategoryChanges) {
-            Table tableToUpdate = filteredTables.stream().filter(e -> e.compareTo(table) == 0).findAny().get();
-            tableToUpdate.copyData(table);
-        } else {
-            addTableToList(table);
+        });
+        getRcvList().swapAdapter(this.tablesAdapter, false);
+    }
+
+    @Override
+    public void updateList(String category) {
+        if (getRcvList() != null && this.tablesAdapter != null) {
+            this.tablesAdapter.updateList(category);
         }
     }
 
-    public Set<Table> getFilteredList(String category) {
-        Category temp = new Category(category, 0);
-         if (tables.containsKey(temp)) {
-            return tables.get(temp);
-        } else {
-            return null;
+    @Override
+    public void addNewItem(Table table) {
+        if (table == null){
+            return;
         }
-    }
-    /*
-    if (category.equals(Constants.ALL)) {
-            Set<Table> allTables = new TreeSet<>();
-            tables.values().forEach(allTables::addAll);
-            return allTables;
-        } else
-     */
-
-    private List<Table> getAllTables() {
-        return this.tables.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    public List<Category> getFilterValues() {
-        List<Category> categoriesValues = new ArrayList<>(this.tables.keySet());
-        Category all = new Category(Constants.ALL, 0);
-        if (categoriesValues.contains(all)) {
-            categoriesValues.remove(all);
+        Category category = DataHandler.getInstance().findCategoryByName(table.getCategory());
+        if (category == null) {
+            category = createNewCategory(table.getCategory());
         }
-        return categoriesValues;
+        DataHandler.getInstance().addItem(DataType.TABLE, category.getName(), table);
     }
 
-    public int getFilterIndex(String filter) {
-        return getFilterValues().indexOf(new Category(filter, 0));
-    }
-
-    public Category getTotalCategory() {
-        return new Category(Constants.ALL, this.tables.values().size());
-    }
-
-    public void updateTables(String filter) {
-        if (this.tables_arrangement_RCV_list != null && this.tablesAdapter != null) {
-            this.tablesAdapter.updateTables(filter);
+    @Override
+    public List<Table> findItemsByCategoryName(String category) {
+        if (category.equals(Constants.ALL)) {
+            return DataHandler.getInstance().getAllTables();
         }
+        Set<Table> result = DataHandler.getInstance().findTablesByCategory(category);
+        if (result == null) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(result);
     }
 
-    public void setDataReadyInterface(DataReadyInterface dataReadyInterface) {
-        this.dataReadyInterface = dataReadyInterface;
-    }
-
-    public void setDataClickedListener(DataClickedListener<Table> dataClickedListener) {
-        this.dataClickedListener = dataClickedListener;
-    }
-
-    public void setTablesRecyclerView(RecyclerView guests_list_RCV_list, Context context, String filter) {
-        this.tables_arrangement_RCV_list = guests_list_RCV_list;
-        initRecyclerViewAdapter(context, filter);
+    @Override
+    public Category getSummedCategory() {
+        return new Category(Constants.ALL, DataHandler.getInstance().getAllTables().size());
     }
 
 }
