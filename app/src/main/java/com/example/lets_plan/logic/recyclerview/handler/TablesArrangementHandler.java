@@ -66,35 +66,38 @@ public class TablesArrangementHandler extends ItemsHandler<Table> {
         });
     }
 
+
     @Override
     public void updateItem(Table oldTable, Table newTable) {
         Set<Table> filteredTables = new TreeSet<>();
-        Category category;
+        Category category = null;
         // Change category
         boolean isCategoryChanges = !oldTable.getCategory().equals(newTable.getCategory());
         if (isCategoryChanges) {
-            int oldFilterIndex = findCategoryIndexByName(oldTable.getCategory());
-            if (oldFilterIndex != -1) {
-                category = getAllCategories().get(oldFilterIndex);
+            int oldCategoryIndex = findCategoryIndexByName(oldTable.getCategory());
+            if (oldCategoryIndex != -1) {
+                category = getAllCategories().get(oldCategoryIndex);
                 filteredTables = DataHandler.getInstance().findTablesByCategory(category.getName());
                 category.substractCount(1);
                 filteredTables.remove(oldTable);
-                if (filteredTables.isEmpty()) {
-                    DataHandler.getInstance().removeCategory(category.getName());
+                if (filteredTables.isEmpty() && !category.getName().equals(Constants.OTHER_CATEGORY)) {
+                    DataHandler.getInstance().removeCategoryFromTablesMap(category.getName());
                 }
             }
         }
-        int filterIndex = findCategoryIndexByName(newTable.getCategory());
-        if (filterIndex != -1) {
-            category = getAllCategories().get(filterIndex);
+        int categoryIndex = findCategoryIndexByName(newTable.getCategory());
+        if (categoryIndex != -1) {
+            category = getAllCategories().get(categoryIndex);
             filteredTables = DataHandler.getInstance().findTablesByCategory(category.getName());
         }
         if (!isCategoryChanges) {
             Table tableToUpdate = filteredTables.stream().filter(e -> e.compareTo(newTable) == 0).findAny().get();
             tableToUpdate.copyData(newTable);
         } else {
-            Category newCategory = createNewCategory(newTable.getCategory());
-            DataHandler.getInstance().addItem(DataType.TABLE, newCategory.getName(), newTable);
+            if (categoryIndex == -1 || category == null) {
+                category = createNewCategory(newTable.getCategory());
+            }
+            DataHandler.getInstance().addItem(DataType.TABLE, category.getName(), newTable);
         }
         FirebaseFirestore.getInstance()
                 .collection(Constants.USERS_COLLECTION)
@@ -103,6 +106,11 @@ public class TablesArrangementHandler extends ItemsHandler<Table> {
                 .document(newTable.getName())
                 .update(Converter.objectToMap(newTable));
         updateGuests(oldTable, newTable);
+    }
+
+    @Override
+    public void removeItem(Table table) {
+        DataHandler.getInstance().removeTable(table);
     }
 
     private void updateGuests(Table oldTable, Table newTable) {

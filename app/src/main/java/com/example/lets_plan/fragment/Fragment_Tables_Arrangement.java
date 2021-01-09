@@ -53,13 +53,13 @@ public class Fragment_Tables_Arrangement extends Fragment_Base {
     }
 
     private void findViews(View view) {
-        this.tables_arrangement_DDM_categories = view.findViewById(R.id.tables_arrangement_DDM_filters);
+        this.tables_arrangement_DDM_categories = view.findViewById(R.id.tables_arrangement_DDM_categories);
         this.tables_arrangement_RCV_list = view.findViewById(R.id.tables_arrangement_RCV_list);
         this.tables_arrangement_IBT_add = view.findViewById(R.id.tables_arrangement_IBT_add);
     }
 
     private void initViews() {
-        String category = getFromSharedPreferences(Constants.CURRENT_TABLE_FILTER, Constants.ALL);
+        String category = getFromSharedPreferences(Constants.CURRENT_TABLE_CATEGORY, Constants.ALL);
         itemsHandler.setRecyclerView(this.tables_arrangement_RCV_list, Objects.requireNonNull(getActivity()).getApplicationContext(), category);
         itemsHandler.setDataReadyInterface(new DataReadyInterface() {
             @Override
@@ -97,13 +97,13 @@ public class Fragment_Tables_Arrangement extends Fragment_Base {
                         categories
                 )
         );
-        String currentCategory = getFromSharedPreferences(Constants.CURRENT_TABLE_FILTER, "");
+        String currentCategory = getFromSharedPreferences(Constants.CURRENT_TABLE_CATEGORY, "");
         this.tables_arrangement_DDM_categories.setText((currentCategory != null ? currentCategory : Constants.ALL), false);
         this.tables_arrangement_DDM_categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Category category = (Category) parent.getItemAtPosition(position);
-                saveToSharedPreferences(Constants.CURRENT_TABLE_FILTER, category.getName());
+                saveToSharedPreferences(Constants.CURRENT_TABLE_CATEGORY, category.getName());
                 tables_arrangement_DDM_categories.setText(category.getName(), false);
                 itemsHandler.updateList(category.getName());
             }

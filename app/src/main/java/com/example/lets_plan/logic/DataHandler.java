@@ -167,8 +167,8 @@ public class DataHandler {
 
     public Map<String, Category> getAllCategoryMap() { return this.allCategories; }
 
-    public Category findCategoryByName(String currentFilter) {
-        return allCategories.get(currentFilter);
+    public Category findCategoryByName(String name) {
+        return allCategories.get(name);
     }
 
     public Set<Guest> findGuestsByCategory(String category) {
@@ -205,5 +205,73 @@ public class DataHandler {
 
     public Table findTableByCategoryAndName(String category, String name) {
         return this.allTables.get(category).stream().filter(table -> table.getName().equals(name)).findAny().orElse(null);
+    }
+
+    public void removeCategoryFromTablesMap(String name) {
+        if (this.allTables.containsKey(name)) {
+            this.allTables.remove(name);
+        }
+    }
+
+    public void removeCategoryFromGuestsMap(String name) {
+        if (this.allGuests.containsKey(name)) {
+            this.allGuests.remove(name);
+        }
+    }
+
+    public void removeTable(Table table) {
+        this.allTables.get(table.getCategory()).remove(table);
+        if (this.allTables.get(table.getCategory()).isEmpty() && !table.getCategory().equals(Constants.OTHER_CATEGORY)) {
+            this.allTables.remove(table.getCategory());
+        }
+        table.getGuests().forEach(phone -> {
+            Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
+            guest.setTable(null);
+            if (guest != null) {
+                FirebaseFirestore.getInstance()
+                        .collection(Constants.USERS_COLLECTION)
+                        .document(DataHandler.getInstance().getOwnerID())
+                        .collection(Constants.GUESTS_COLLECTION)
+                        .document(phone)
+                        .update(Converter.objectToMap(guest));
+            }
+        });
+        FirebaseFirestore.getInstance()
+                .collection(Constants.USERS_COLLECTION)
+                .document(DataHandler.getInstance().getOwnerID())
+                .collection(Constants.TABLES_COLLECTION)
+                .document(table.getName())
+                .delete();
+    }
+
+    public void removeGuest(Guest guest) {
+        this.allGuests.get(guest.getCategory()).remove(guest);
+        if (this.allGuests.get(guest.getCategory()).isEmpty()) {
+            this.allGuests.remove(guest.getCategory());
+            this.allCategories.remove(guest.getCategory());
+        }
+        if (guest.getTable() != null) {
+            Table table = findTableByName(guest.getTable());
+            if (table != null) {
+                table.getGuests().remove(guest.getPhoneNumber());
+                FirebaseFirestore.getInstance()
+                        .collection(Constants.USERS_COLLECTION)
+                        .document(DataHandler.getInstance().getOwnerID())
+                        .collection(Constants.TABLES_COLLECTION)
+                        .document(table.getName())
+                        .update(Converter.objectToMap(table));
+            }
+        }
+        FirebaseFirestore.getInstance()
+                .collection(Constants.USERS_COLLECTION)
+                .document(DataHandler.getInstance().getOwnerID())
+                .collection(Constants.GUESTS_COLLECTION)
+                .document(guest.getPhoneNumber())
+                .delete();
+
+    }
+
+    private Table findTableByName(String name) {
+        return getAllTables().stream().filter(table -> table.getName().equals(name)).findAny().orElse(null);
     }
 }

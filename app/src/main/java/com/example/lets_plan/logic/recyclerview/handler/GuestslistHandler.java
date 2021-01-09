@@ -59,20 +59,21 @@ public class GuestslistHandler extends ItemsHandler<Guest> {
         // Change category
         boolean isCategoryChanges = !oldGuest.getCategory().equals(newGuest.getCategory());
         if (isCategoryChanges) {
-            int oldFilterIndex = findCategoryIndexByName(oldGuest.getCategory());
-            if (oldFilterIndex != -1) {
-                category = getAllCategories().get(oldFilterIndex);
+            int oldCategoryIndex = findCategoryIndexByName(oldGuest.getCategory());
+            if (oldCategoryIndex != -1) {
+                category = getAllCategories().get(oldCategoryIndex);
                 filteredGuests = DataHandler.getInstance().findGuestsByCategory(category.getName());
                 filteredGuests.remove(oldGuest);
                 category.substractCount(oldGuest.getNumberOfGuests().intValue());
                 if (filteredGuests.isEmpty()) {
+                    DataHandler.getInstance().removeCategoryFromGuestsMap(category.getName());
                     DataHandler.getInstance().removeCategory(category.getName());
                 }
             }
         }
-        int filterIndex = findCategoryIndexByName(newGuest.getCategory());
-        if (filterIndex != -1) {
-            category = getAllCategories().get(filterIndex);
+        int categoryIndex = findCategoryIndexByName(newGuest.getCategory());
+        if (categoryIndex != -1) {
+            category = getAllCategories().get(categoryIndex);
             filteredGuests = DataHandler.getInstance().findGuestsByCategory(category.getName());
             if (!isCategoryChanges) {
                 Guest guestToUpdate = filteredGuests.stream().filter(e -> e.compareTo(newGuest) == 0).findAny().orElse(null);
@@ -94,6 +95,11 @@ public class GuestslistHandler extends ItemsHandler<Guest> {
                 .collection(Constants.GUESTS_COLLECTION)
                 .document(newGuest.getPhoneNumber())
                 .update(Converter.objectToMap(newGuest));
+    }
+
+    @Override
+    public void removeItem(Guest guest) {
+        DataHandler.getInstance().removeGuest(guest);
     }
 
     @Override
@@ -127,9 +133,9 @@ public class GuestslistHandler extends ItemsHandler<Guest> {
     }
 
     @Override
-    public void updateList(String filter) {
+    public void updateList(String category) {
         if (getRcvList() != null && this.guestslistAdapter != null) {
-            this.guestslistAdapter.updateList(filter);
+            this.guestslistAdapter.updateList(category);
         }
     }
 

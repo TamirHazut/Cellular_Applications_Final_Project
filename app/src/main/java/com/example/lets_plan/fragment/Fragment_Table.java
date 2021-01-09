@@ -159,6 +159,9 @@ public class Fragment_Table extends Fragment_Base {
         this.table_BTN_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!newTable) {
+                    tableItemsHandler.removeItem(oldTableData);
+                }
                 if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                 }
@@ -218,10 +221,12 @@ public class Fragment_Table extends Fragment_Base {
             List<String> temp = new ArrayList<>();
             currentTable.getGuests().forEach(phone -> {
                 Guest guest = DataHandler.getInstance().findGuestByPhone(phone);
-                if (guest != null && guest.getCategory().equals(currentTable.getCategory())) {
-                    temp.add(phone);
-                } else {
-                    guest.setTable(null);
+                if (guest != null) {
+                    if (guest.getCategory().equals(currentTable.getCategory()) || currentTable.getCategory().equals(Constants.OTHER_CATEGORY)) {
+                        temp.add(phone);
+                    } else {
+                        guest.setTable(null);
+                    }
                 }
             });
             currentTable.setGuests(temp);

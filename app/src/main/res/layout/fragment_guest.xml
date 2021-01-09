@@ -137,10 +137,10 @@
                 android:layout_weight="1"
                 android:layout_marginHorizontal="@dimen/_4sdp">
                 <android.widget.Button
-                    android:id="@+id/guest_BTN_cancel"
+                    android:id="@+id/guest_BTN_delete"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/btn_cancel"
+                    android:text="@string/btn_delete"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp"
                     android:background="@drawable/style_btn_round_corners_red">

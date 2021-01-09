@@ -46,14 +46,16 @@ public abstract class ItemsHandler<T> {
 
     public abstract void updateItem(T oldItem, T newItem);
 
+    public abstract void removeItem(T item);
+
     // RecyclerView
-    public abstract void initRecyclerView(Context context, String filter);
+    public abstract void initRecyclerView(Context context, String category);
 
     public abstract void setRecyclerView(RecyclerView rcv_list, Context context, String category);
 
     public abstract void initAdapter(String category);
 
-    public abstract void updateList(String filter);
+    public abstract void updateList(String category);
 
     // Creation
     public abstract void addNewItem(T item);
@@ -65,8 +67,8 @@ public abstract class ItemsHandler<T> {
     }
 
     // Find
-    public int findCategoryIndexByName(String filter) {
-        return getAllCategories().indexOf(new Category(filter, 0));
+    public int findCategoryIndexByName(String name) {
+        return getAllCategories().indexOf(new Category(name, 0));
     }
 
     public abstract List<T> findItemsByCategoryName(String category);

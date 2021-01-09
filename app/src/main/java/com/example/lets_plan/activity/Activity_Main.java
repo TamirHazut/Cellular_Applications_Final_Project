@@ -29,7 +29,7 @@ public class Activity_Main extends Activity_Base {
         // Inits
         DataHandler.init(this);
         UserRepositorySingleton.init(this);
-        SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.CURRENT_GUEST_FILTER, Constants.ALL).putString(Constants.CURRENT_TABLE_FILTER, Constants.ALL).apply();
+        SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.CURRENT_GUEST_CATEGORY, Constants.ALL).putString(Constants.CURRENT_TABLE_CATEGORY, Constants.ALL).apply();
         gson = new Gson();
 
         // Loader

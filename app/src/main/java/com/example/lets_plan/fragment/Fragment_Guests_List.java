@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Fragment_Guests_List extends Fragment_Base {
-    private AutoCompleteTextView guests_list_DDM_filters;
+    private AutoCompleteTextView guests_list_DDM_categories;
     private RecyclerView guests_list_RCV_list;
     private Button guests_list_BTN_send_invites;
     private ImageButton guests_list_IBT_add;
@@ -55,14 +55,14 @@ public class Fragment_Guests_List extends Fragment_Base {
     }
 
     private void findViews(View view) {
-        this.guests_list_DDM_filters = view.findViewById(R.id.guests_list_DDM_filters);
+        this.guests_list_DDM_categories = view.findViewById(R.id.guests_list_DDM_categories);
         this.guests_list_RCV_list = view.findViewById(R.id.guests_list_RCV_list);
         this.guests_list_BTN_send_invites = view.findViewById(R.id.guests_list_BTN_send_invites);
         this.guests_list_IBT_add = view.findViewById(R.id.guests_list_IBT_add);
     }
 
     private void initViews() {
-        String category = getFromSharedPreferences(Constants.CURRENT_GUEST_FILTER, Constants.ALL);
+        String category = getFromSharedPreferences(Constants.CURRENT_GUEST_CATEGORY, Constants.ALL);
         itemsHandler.setRecyclerView(this.guests_list_RCV_list, Objects.requireNonNull(getActivity()).getApplicationContext(), category);
         itemsHandler.setDataReadyInterface(new DataReadyInterface() {
             @Override
@@ -97,21 +97,21 @@ public class Fragment_Guests_List extends Fragment_Base {
     private void updateDropdown() {
         List<Category> categories = new ArrayList<>(DataHandler.getInstance().getAllCategories());
         categories.remove(new Category(Constants.OTHER_CATEGORY, 0));
-        this.guests_list_DDM_filters.setAdapter(
+        this.guests_list_DDM_categories.setAdapter(
                 new ArrayAdapter<>(
                         getActivity().getApplicationContext(),
                         R.layout.dropdown_menu_list_item,
                         categories
                 )
         );
-        String currentCategory = getFromSharedPreferences(Constants.CURRENT_GUEST_FILTER, "");
-        this.guests_list_DDM_filters.setText((currentCategory != null ? currentCategory : Constants.ALL), false);
-        this.guests_list_DDM_filters.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        String currentCategory = getFromSharedPreferences(Constants.CURRENT_GUEST_CATEGORY, "");
+        this.guests_list_DDM_categories.setText((currentCategory != null ? currentCategory : Constants.ALL), false);
+        this.guests_list_DDM_categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Category category = (Category) parent.getItemAtPosition(position);
-                saveToSharedPreferences(Constants.CURRENT_GUEST_FILTER, category.getName());
-                guests_list_DDM_filters.setText(category.getName(), false);
+                saveToSharedPreferences(Constants.CURRENT_GUEST_CATEGORY, category.getName());
+                guests_list_DDM_categories.setText(category.getName(), false);
                 itemsHandler.updateList(category.getName());
             }
         });

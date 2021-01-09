@@ -1,7 +1,6 @@
 package com.example.lets_plan.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static java.lang.String.*;
-
 public class Fragment_Guest extends Fragment_Base {
     private EditText guest_EDT_full_name;
     private EditText guest_EDT_phone_number;
@@ -36,7 +33,7 @@ public class Fragment_Guest extends Fragment_Base {
     private AutoCompleteTextView guest_DDM_categories;
     private EditText guest_EDT_new_category;
     private Button guest_BTN_save;
-    private Button guest_BTN_cancel;
+    private Button guest_BTN_delete;
     private final ItemsHandler<Guest> itemsHandler;
     private Guest currentGuest;
     private Guest oldGuestData;
@@ -78,7 +75,7 @@ public class Fragment_Guest extends Fragment_Base {
         this.guest_DDM_categories = view.findViewById(R.id.guest_DDM_categories);
         this.guest_EDT_new_category = view.findViewById(R.id.guest_EDT_new_category);
         this.guest_BTN_save = view.findViewById(R.id.guest_BTN_save);
-        this.guest_BTN_cancel = view.findViewById(R.id.guest_BTN_cancel);
+        this.guest_BTN_delete = view.findViewById(R.id.guest_BTN_delete);
     }
 
     private void initViews() {
@@ -129,24 +126,24 @@ public class Fragment_Guest extends Fragment_Base {
             }
         });
         // Filters dropdown
-        List<String> filters = new ArrayList<>(DataHandler.getInstance().getAllCategoriesNames());
-        filters.remove(Constants.ALL);
+        List<String> categories = new ArrayList<>(DataHandler.getInstance().getAllCategoriesNames());
+        categories.remove(Constants.ALL);
         this.guest_DDM_categories.setAdapter(new ArrayAdapter<>(
                 getActivity().getApplicationContext(),
                 R.layout.dropdown_menu_list_item,
-                filters
+                categories
         ));
         this.guest_DDM_categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String filter = parent.getItemAtPosition(position).toString();
-                if (Constants.OTHER_CATEGORY.equals(filter)) {
+                String category = parent.getItemAtPosition(position).toString();
+                if (Constants.OTHER_CATEGORY.equals(category)) {
                     guest_EDT_new_category.setVisibility(View.VISIBLE);
                     currentGuest.setCategory(null);
                 } else {
                     guest_EDT_new_category.setText("");
                     guest_EDT_new_category.setVisibility(View.INVISIBLE);
-                    currentGuest.setCategory(filter);
+                    currentGuest.setCategory(category);
                 }
             }
         });
@@ -183,9 +180,12 @@ public class Fragment_Guest extends Fragment_Base {
                 }
             }
         });
-        this.guest_BTN_cancel.setOnClickListener(new View.OnClickListener() {
+        this.guest_BTN_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!newGuest) {
+                    itemsHandler.removeItem(oldGuestData);
+                }
                 if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                 }

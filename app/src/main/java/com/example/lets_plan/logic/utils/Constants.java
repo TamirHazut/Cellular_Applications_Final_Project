@@ -3,8 +3,8 @@ package com.example.lets_plan.logic.utils;
 public class Constants {
     public static final String ALL = "All";
     public static final int BACK_PRESSED_TIME_INTERVAL = 2000;
-    public static final String CURRENT_GUEST_FILTER = "CURRENT_GUEST_FILTER";
-    public static final String CURRENT_TABLE_FILTER = "CURRENT_TABLE_FILTER";
+    public static final String CURRENT_GUEST_CATEGORY = "CURRENT_GUEST_CATEGORY";
+    public static final String CURRENT_TABLE_CATEGORY = "CURRENT_TABLE_CATEGORY";
     public static final String CURRENT_GUEST = "CURRENT_GUEST";
     public static final String CURRENT_TABLE = "CURRENT_TABLE";
     public static final String GUEST_ALREADY_IN_A_TABLE = "Guest is already assigned to a table";
