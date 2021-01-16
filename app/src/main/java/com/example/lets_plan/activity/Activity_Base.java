@@ -26,7 +26,6 @@ public class Activity_Base extends AppCompatActivity {
         if (this.isDoubleBackPressToClose) {
             if (this.mBackPressed + Constants.BACK_PRESSED_TIME_INTERVAL > System.currentTimeMillis()) {
                 if (SharedPreferencesSingleton.getInstance().getPrefs().getString(Constants.USER_INFO, null) != null) {
-                    SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, null).apply();
                     FirebaseAuth.getInstance().signOut();
                 }
                 super.onBackPressed();

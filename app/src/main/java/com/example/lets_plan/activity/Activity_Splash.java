@@ -43,7 +43,7 @@ public class Activity_Splash extends Activity_Base {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
-        view.setY(-height/2);
+        view.setY(-height / 2f);
         view.animate()
                 .translationY(0)
                 .setDuration(Constants.ANIMATION_DURATION_IN_MS)
@@ -56,7 +56,7 @@ public class Activity_Splash extends Activity_Base {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, uid);
+                        SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, uid).apply();
                         if (uid != null)
                             Log.d("UserID", uid);
                         Intent intent = new Intent(Activity_Splash.this, Activity_Main.class);
