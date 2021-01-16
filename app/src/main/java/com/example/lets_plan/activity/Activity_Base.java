@@ -4,7 +4,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.lets_plan.logic.SharedPreferencesSingleton;
 import com.example.lets_plan.logic.utils.Constants;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class Activity_Base extends AppCompatActivity {
@@ -23,6 +25,10 @@ public class Activity_Base extends AppCompatActivity {
     private void playerExitValidate() {
         if (this.isDoubleBackPressToClose) {
             if (this.mBackPressed + Constants.BACK_PRESSED_TIME_INTERVAL > System.currentTimeMillis()) {
+                if (SharedPreferencesSingleton.getInstance().getPrefs().getString(Constants.USER_INFO, null) != null) {
+                    SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, null).apply();
+                    FirebaseAuth.getInstance().signOut();
+                }
                 super.onBackPressed();
                 return;
             }

@@ -4,23 +4,31 @@ import android.animation.Animator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.ImageView;
 
 import com.example.lets_plan.R;
+import com.example.lets_plan.logic.SharedPreferencesSingleton;
 import com.example.lets_plan.logic.utils.Constants;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Activity_Splash extends Activity_Base {
     private ImageView splash_IMG_logo;
+    private String uid = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
         findViews();
         initViews();
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null) {
+            uid = fbUser.getUid();
+        }
         startAnimation(splash_IMG_logo);
     }
 
@@ -48,8 +56,12 @@ public class Activity_Splash extends Activity_Base {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        Intent mainIntent = new Intent(Activity_Splash.this, Activity_Main.class);
-                        startActivity(mainIntent);
+                        SharedPreferencesSingleton.getInstance().getPrefs().edit().putString(Constants.USER_INFO, uid);
+                        if (uid != null)
+                            Log.d("UserID", uid);
+                        Intent intent = new Intent(Activity_Splash.this, Activity_Main.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
 
                     @Override

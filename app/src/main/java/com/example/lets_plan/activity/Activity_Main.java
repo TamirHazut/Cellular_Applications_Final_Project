@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.example.lets_plan.R;
+import com.example.lets_plan.fragment.Fragment_Actions;
+import com.example.lets_plan.fragment.Fragment_Container;
 import com.example.lets_plan.fragment.Fragment_Main;
 import com.example.lets_plan.logic.utils.Constants;
 import com.example.lets_plan.logic.DataHandler;
@@ -44,8 +46,15 @@ public class Activity_Main extends Activity_Base {
         }
         if (savedInstanceState == null) {
             if (findViewById(R.id.main_FGMT_container) != null) {
-                Fragment_Main fragment_main = new Fragment_Main();
-                getSupportFragmentManager().beginTransaction().add(R.id.main_FGMT_container, fragment_main).commit();
+                String uid = SharedPreferencesSingleton.getInstance().getPrefs().getString(Constants.USER_INFO, null);
+                Fragment_Container fragment_container;
+                if (uid == null) {
+                    fragment_container = new Fragment_Main();
+                } else {
+                    DataHandler.getInstance().setOwnerID(uid);
+                    fragment_container = new Fragment_Actions();
+                }
+                getSupportFragmentManager().beginTransaction().add(R.id.main_FGMT_container, fragment_container).commit();
             }
         }
 
