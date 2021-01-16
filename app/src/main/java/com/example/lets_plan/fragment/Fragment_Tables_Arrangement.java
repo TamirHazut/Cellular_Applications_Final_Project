@@ -73,14 +73,14 @@ public class Fragment_Tables_Arrangement extends Fragment_Base {
             public void dataClicked(Table table) {
                 saveToSharedPreferences(Constants.NEW_TABLE, toJson(false, Boolean.class));
                 saveToSharedPreferences(Constants.CURRENT_TABLE, toJson(table, Table.class));
-                switchParentFragment(R.id.main_FGMT_container, new Fragment_Table(itemsHandler), false);
+                switchParentFragment(R.id.main_FGMT_container, new Fragment_Table(itemsHandler), true);
             }
         });
         this.tables_arrangement_IBT_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveToSharedPreferences(Constants.NEW_TABLE, toJson(true, Boolean.class));
-                switchParentFragment(R.id.main_FGMT_container, new Fragment_Table(itemsHandler), false);
+                switchParentFragment(R.id.main_FGMT_container, new Fragment_Table(itemsHandler), true);
             }
         });
     }

@@ -76,24 +76,6 @@ public class TableViewAdapter extends Adapter<TableViewHolder> implements Filter
         getFilter().filter(filter);
     }
 
-//    public void setAllTables(List<Table> tables) {
-//        this.allTables = tables;
-//        updateList(Constants.ALL);
-//    }
-//
-//    public void removeTable(Table table) {
-//        int position = 0;
-//        for (; position < allTables.size(); position++) {
-//            if (allTables.get(position).equals(table)) {
-//                break;
-//            }
-//        }
-//        allTables.remove(table);
-//        updateList(Constants.ALL);
-//        notifyItemRemoved(position);
-//        notifyItemRangeChanged(position, filteredTables.size());
-//    }
-
     @Override
     public Filter getFilter() {
         return filter;

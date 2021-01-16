@@ -126,7 +126,7 @@ public class Fragment_Table extends Fragment_Base {
                     Toast.makeText(getActivity(), Constants.GUEST_ALREADY_IN_A_TABLE, Toast.LENGTH_LONG).show();
                     saveToSharedPreferences(Constants.VALID_GUEST, false);
                 } else if (Table.sumGuests(currentTable)+guest.getNumberOfGuests() > currentTable.getMaxCapacity()) {
-                    Toast.makeText(getActivity(), Constants.TABLE_IS_FULL, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), Constants.NOT_ENOUGH_SEATS_IN_TABLE, Toast.LENGTH_LONG).show();
                     saveToSharedPreferences(Constants.VALID_GUEST, false);
                 } else {
                     currentTable.getGuests().add(guest.getPhoneNumber());

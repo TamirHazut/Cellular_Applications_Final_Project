@@ -13,8 +13,8 @@ public class Activity_Base extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
-            backToMain();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStackImmediate();
         } else {
             playerExitValidate();
         }
@@ -33,10 +33,5 @@ public class Activity_Base extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
-    }
-
-    public void backToMain() {
-//        FragmentManager fm = getSupportFragmentManager();
-//        fm.popBackStackImmediate(Fragment_Main.class.getSimpleName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }

@@ -76,14 +76,14 @@ public class Fragment_Guests_List extends Fragment_Base {
             public void dataClicked(Guest guest) {
                 saveToSharedPreferences(Constants.NEW_GUEST, toJson(false, Boolean.class));
                 saveToSharedPreferences(Constants.CURRENT_GUEST, toJson(guest, Guest.class));
-                switchParentFragment(R.id.main_FGMT_container, new Fragment_Guest(itemsHandler), false);
+                switchParentFragment(R.id.main_FGMT_container, new Fragment_Guest(itemsHandler), true);
             }
         });
         this.guests_list_IBT_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveToSharedPreferences(Constants.NEW_GUEST, toJson(true, Boolean.class));
-                switchParentFragment(R.id.main_FGMT_container, new Fragment_Guest(itemsHandler), false);
+                switchParentFragment(R.id.main_FGMT_container, new Fragment_Guest(itemsHandler), true);
             }
         });
         this.guests_list_BTN_send_invites.setOnClickListener(new View.OnClickListener() {

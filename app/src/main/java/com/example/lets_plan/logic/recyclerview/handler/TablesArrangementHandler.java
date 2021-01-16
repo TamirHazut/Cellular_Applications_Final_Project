@@ -164,7 +164,6 @@ public class TablesArrangementHandler extends ItemsHandler<Table> {
             return;
         }
         this.tablesAdapter = new TableViewAdapter(tables);
-//        updateList(category);
         tablesAdapter.setClickListener(new ItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {

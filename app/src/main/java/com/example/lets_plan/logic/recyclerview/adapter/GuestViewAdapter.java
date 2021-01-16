@@ -36,7 +36,7 @@ public class GuestViewAdapter extends Adapter<GuestViewHolder> implements Filter
     private final boolean hiddenCheckMark;
 
     public GuestViewAdapter(List<Guest> allGuests) {
-        this(allGuests, false, null);
+        this(allGuests, true, null);
     }
 
     public GuestViewAdapter(List<Guest> allGuests, boolean hiddenCheckMark, List<Guest> checkedGuests) {
@@ -83,18 +83,6 @@ public class GuestViewAdapter extends Adapter<GuestViewHolder> implements Filter
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
-
-//    public void addGuest(int position, Guest guest) {
-//        allGuests.add(guest);
-//        notifyItemInserted(position);
-//        notifyItemRangeChanged(position, allGuests.size());
-//    }
-//
-//    public void removeGuest(int position) {
-//        allGuests.remove(position);
-//        notifyItemRemoved(position);
-//        notifyItemRangeChanged(position, allGuests.size());
-//    }
 
     public void updateList(String filter) {
         getFilter().filter(filter);

@@ -75,7 +75,11 @@ public abstract class Fragment_Base extends Fragment {
 
     protected void switchParentFragment(int containerViewId, Fragment_Base fragment, boolean addToBackStack) {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(containerViewId, fragment, fragment.getClass().getSimpleName()).addToBackStack((addToBackStack ? getClass().getSimpleName() : null)).commit();
+        if (addToBackStack) {
+            transaction.replace(containerViewId, fragment, fragment.getClass().getSimpleName()).addToBackStack(getClass().getSimpleName()).commit();
+        } else {
+            transaction.replace(containerViewId, fragment, fragment.getClass().getSimpleName()).commit();
+        }
     }
 
 }

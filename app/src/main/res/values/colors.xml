@@ -34,4 +34,9 @@
 
     <color name="loader">#1697FD</color>
 
+    <color name="gradient_color_start">#7CA9D6</color>
+    <color name="gradient_color_center">#acc4dc</color>
+    <color name="light_gray">#D6D6D6</color>
+    <color name="dark_gray">#5C5C5C</color>
+
 </resources>
