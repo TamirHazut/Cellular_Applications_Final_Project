@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.example.lets_plan.R;
@@ -16,7 +17,7 @@ public class Fragment_Actions extends Fragment_Container {
     private RadioButton actions_RBT_event_hall;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_actions, container, false);
         findViews(view);
@@ -88,7 +89,7 @@ public class Fragment_Actions extends Fragment_Container {
         } else if (this.actions_RBT_tables_arrangement.isChecked()) {
             fragment = new Fragment_Tables_Arrangement();
         } else if (this.actions_RBT_event_hall.isChecked()) {
-//            fragment = new Fragment_Event_Hall();
+            fragment = new Fragment_Map();
         }
         return fragment;
     }

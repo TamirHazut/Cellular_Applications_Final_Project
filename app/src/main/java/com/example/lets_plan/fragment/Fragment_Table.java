@@ -151,9 +151,7 @@ public class Fragment_Table extends Fragment_Base {
                 } else {
                     tableItemsHandler.updateItem(oldTableData, currentTable);
                 }
-                if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getActivity().getSupportFragmentManager().popBackStackImmediate();
-                }
+                closeFragment();
             }
         });
         this.table_BTN_delete.setOnClickListener(new View.OnClickListener() {
@@ -162,9 +160,7 @@ public class Fragment_Table extends Fragment_Base {
                 if (!newTable) {
                     tableItemsHandler.removeItem(oldTableData);
                 }
-                if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getActivity().getSupportFragmentManager().popBackStackImmediate();
-                }
+                closeFragment();
             }
         });
     }

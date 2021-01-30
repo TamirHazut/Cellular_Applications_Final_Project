@@ -175,9 +175,7 @@ public class Fragment_Guest extends Fragment_Base {
                 } else {
                     itemsHandler.updateItem(oldGuestData, currentGuest);
                 }
-                if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getActivity().getSupportFragmentManager().popBackStackImmediate();
-                }
+                closeFragment();
             }
         });
         this.guest_BTN_delete.setOnClickListener(new View.OnClickListener() {
@@ -186,9 +184,7 @@ public class Fragment_Guest extends Fragment_Base {
                 if (!newGuest) {
                     itemsHandler.removeItem(oldGuestData);
                 }
-                if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getActivity().getSupportFragmentManager().popBackStackImmediate();
-                }
+                closeFragment();
             }
         });
     }

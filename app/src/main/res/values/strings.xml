@@ -7,6 +7,7 @@
     <string name="btn_tables_arrangement">Tables Arrangement</string>
     <string name="btn_eventhall">Event Hall</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="btn_close">Close</string>
     <string name="btn_save">Save</string>
     <string name="btn_delete">Delete</string>
     <string name="fullname">Full name</string>
@@ -21,4 +22,22 @@
     <string name="table_max">Table max</string>
     <string name="table_name">Table name</string>
     <string name="table_capacity">0/0</string>
+    <string name="permission_rationale">"Location permissions are needed to display map."</string>
+    <string name="message_location_disabled">You have disabled the locations permanently,
+        To enable the permissions please go to Settings -> Location and enable,
+        pressing OK you will be navigated to Settings screen</string>
+    <string name="message_permission_disabled">You have disabled the permissions permanently,
+        To enable the permissions please go to Settings -> Permissions and enable the required Permissions,
+        pressing OK you will be navigated to Settings screen</string>
+    <string name="message_additional_charges_may_incur">If you continue this action, It may incur additional charges</string>
+    <string name="message_invite">We are happy to invite you to our event.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="hall_name">Hall Name</string>
+    <string name="hall_address">Hall Address</string>
+    <string name="hall_phoneNumber">Hall Phone number</string>
+    <string name="hall_opening_time">Hall Opening time</string>
+    <string name="btn_select">Select</string>
+    <string name="event_hall_website">Website</string>
+    <string name="btn_reset">Reset</string>
 </resources>

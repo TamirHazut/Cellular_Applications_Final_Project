@@ -37,11 +37,15 @@ public class Converter {
                 if (entry.getKey().length() > 1) {
                     methodName += entry.getKey().substring(1);
                 }
-                methods.get(methodName).invoke(obj, entry.getValue());
+                if (methods.containsKey(methodName)) {
+                    methods.get(methodName).invoke(obj, entry.getValue());
+                }
             }
         } catch (ReflectiveOperationException e) {
             Log.e("Converter", "mapToObject - " + e.getMessage());
         }
-        return obj;
+        finally {
+            return obj;
+        }
     }
 }

@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.lets_plan">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -25,6 +30,7 @@
         <activity
             android:name=".activity.Activity_Main"
             android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustNothing"
             android:screenOrientation="portrait">
         </activity>
         <meta-data
@@ -34,9 +40,4 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/maps_api_key" />
     </application>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
 </manifest>

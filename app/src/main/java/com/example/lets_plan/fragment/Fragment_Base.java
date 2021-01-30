@@ -15,6 +15,7 @@ import com.example.lets_plan.logic.SharedPreferencesSingleton;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 public abstract class Fragment_Base extends Fragment {
     private Gson gson;
@@ -58,6 +59,10 @@ public abstract class Fragment_Base extends Fragment {
         return SharedPreferencesSingleton.getInstance().getPrefs().getBoolean(key, defValue);
     }
 
+    protected void removeFromSharedPreferences(String key) {
+        SharedPreferencesSingleton.getInstance().getPrefs().edit().remove(key).apply();
+    }
+
     protected String toJson(Object o, Type type) {
         if (o == null) {
             return "";
@@ -79,6 +84,12 @@ public abstract class Fragment_Base extends Fragment {
             transaction.replace(containerViewId, fragment, fragment.getClass().getSimpleName()).addToBackStack(getClass().getSimpleName()).commit();
         } else {
             transaction.replace(containerViewId, fragment, fragment.getClass().getSimpleName()).commit();
+        }
+    }
+
+    protected void closeFragment() {
+        if (Objects.requireNonNull(getActivity()).getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getActivity().getSupportFragmentManager().popBackStackImmediate();
         }
     }
 

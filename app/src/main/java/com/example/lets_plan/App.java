@@ -5,11 +5,7 @@ import android.os.Build;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.example.lets_plan.activity.Activity_Base;
-import com.example.lets_plan.logic.DataHandler;
-import com.example.lets_plan.logic.LocationHandlerSingleton;
 import com.example.lets_plan.logic.SharedPreferencesSingleton;
-import com.example.lets_plan.logic.UserRepositorySingleton;
 
 public class App extends Application {
 
@@ -20,7 +16,6 @@ public class App extends Application {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
         SharedPreferencesSingleton.init(this);
-        LocationHandlerSingleton.init(this);
     }
 
 }

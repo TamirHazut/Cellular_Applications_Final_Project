@@ -6,32 +6,47 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
 import com.example.lets_plan.R;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.lets_plan.data.EventHall;
+import com.example.lets_plan.logic.PermissionHandlerSingleton;
+import com.example.lets_plan.logic.MapDataHandler;
+import com.example.lets_plan.logic.callback.DataClickedListener;
+import com.example.lets_plan.logic.callback.DataReadyInterface;
+import com.example.lets_plan.logic.utils.Constants;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Stack;
-
-public class Fragment_Map extends Fragment {
+public class Fragment_Map extends Fragment_Base {
     private MapView mMapView;
-    private GoogleMap mGoogleMap;
-    private final Stack<MarkerOptions> markers;
+    private MapDataHandler mapDataHandler;
+
 
     public Fragment_Map() {
-        this.markers = new Stack<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_map, container, false);
+        this.mapDataHandler = MapDataHandler.getInstance();
+        this.mapDataHandler.setAPIKey(getActivity().getResources().getString(R.string.search_api_key));
+        this.mapDataHandler.setDataClickedListener(new DataClickedListener<EventHall>() {
+            @Override
+            public void dataClicked(EventHall data) {
+                saveToSharedPreferences(Constants.CURRENT_EVENT_HALL, toJson(data, EventHall.class));
+                switchParentFragment(R.id.main_FGMT_container, new Fragment_Event_Hall(), true);
+            }
+        });
+        PermissionHandlerSingleton.getInstance().setDataReadyInterface(new DataReadyInterface() {
+            @Override
+            public void dataReady() {
+                mapDataHandler.setCurrentLocationReady(true);
+                mapDataHandler.setSettingsAfterMapAndDataAreReady();
+            }
+        });
+        PermissionHandlerSingleton.getInstance().checkLocationPermission();
         findViews(v);
         initViews();
         this.mMapView.onCreate(savedInstanceState);
@@ -39,29 +54,17 @@ public class Fragment_Map extends Fragment {
     }
 
     private void findViews(View v) {
-        this.mMapView = v.findViewById(R.id.mapView);
+        this.mMapView = (MapView) v.findViewById(R.id.mapView);
     }
 
     private void initViews() {
         this.mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                mGoogleMap = googleMap;
-                mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-                MarkerOptions marker = new MarkerOptions();
-                while (!markers.isEmpty()) {
-                    marker = markers.pop();
-                    mGoogleMap.addMarker(marker);
-                }
-                if (marker.getPosition() != null) {
-                    CameraPosition liberty = CameraPosition.builder().target(marker.getPosition()).zoom(16).bearing(0).tilt(45).build();
-                    mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(liberty));
-                }
+                mapDataHandler.mapReady(googleMap);
             }
-        }); //this is important
+        });
     }
-
-
 
     @Override
     public void onResume() {
@@ -93,26 +96,4 @@ public class Fragment_Map extends Fragment {
         this.mMapView.onLowMemory();
     }
 
-    public void updateMapFocus(LatLng location) {
-        this.updateMapFocus(CameraPosition.builder()
-                .target(location)
-                .zoom(16)
-                .bearing(0)
-                .tilt(45)
-                .build());
-    }
-
-    public void updateMapFocus(CameraPosition cameraPosition) {
-        if (this.mGoogleMap != null) {
-            this.mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
-    }
-
-    public GoogleMap getGoogleMap() {
-        return mGoogleMap;
-    }
-
-    public void placeMarker(String title, String snippet, double lat, double lng) {
-        this.markers.push(new MarkerOptions().title(title).snippet(snippet).position(new LatLng(lat, lng)));
-    }
 }

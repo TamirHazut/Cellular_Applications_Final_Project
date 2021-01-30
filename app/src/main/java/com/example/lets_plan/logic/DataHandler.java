@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lets_plan.data.Category;
+import com.example.lets_plan.data.DateAndTime;
+import com.example.lets_plan.data.EventHall;
 import com.example.lets_plan.data.Guest;
 import com.example.lets_plan.data.Table;
 import com.example.lets_plan.logic.callback.DataReadyInterface;
@@ -33,6 +35,8 @@ public class DataHandler {
     private DataReadyInterface tablesDataReady;
     private final Map<String, Category> allCategories;
     private String ownerID;
+    private DateAndTime eventDateAndTime;
+    private EventHall eventHall;
     private RotateLoading rotateLoading;
 
     private DataHandler(AppCompatActivity context) {
@@ -54,7 +58,7 @@ public class DataHandler {
     private void loadData() {
         FirebaseFirestore.getInstance()
                 .collection(Constants.USERS_COLLECTION)
-                .document(DataHandler.getInstance().getOwnerID())
+                .document(this.ownerID)
                 .collection(Constants.GUESTS_COLLECTION)
                 .get()
                 .addOnSuccessListener(task -> {
@@ -75,7 +79,7 @@ public class DataHandler {
                 });
         FirebaseFirestore.getInstance()
                 .collection(Constants.USERS_COLLECTION)
-                .document(DataHandler.getInstance().getOwnerID())
+                .document(this.ownerID)
                 .collection(Constants.TABLES_COLLECTION)
                 .get()
                 .addOnSuccessListener(task -> {
@@ -87,6 +91,18 @@ public class DataHandler {
                         tablesDataReady.dataReady();
                     }
                 });
+        FirebaseFirestore.getInstance()
+                .collection(Constants.USERS_COLLECTION)
+                .document(this.ownerID)
+                .collection(Constants.EVENT_HALL_COLLECTION)
+                .get()
+                .addOnSuccessListener(task -> task.forEach(snapshot -> setEventHall(Converter.mapToObject(snapshot.getData(), EventHall.class))));
+        FirebaseFirestore.getInstance()
+                .collection(Constants.USERS_COLLECTION)
+                .document(this.ownerID)
+                .collection(Constants.DATE_AND_TIME_COLLECTION)
+                .get()
+                .addOnSuccessListener(task -> task.forEach(snapshot -> setEventDateAndTime(Converter.mapToObject(snapshot.getData(), DateAndTime.class))));
     }
 
     public <T extends Comparable<T>> void addItem(DataType dataType, String category, T item) {
@@ -122,6 +138,73 @@ public class DataHandler {
     public Context getContext() {
         return context;
     }
+
+    public EventHall getEventHall() {
+        return eventHall;
+    }
+
+    public void setEventHall(EventHall eventHall) {
+        this.eventHall = eventHall;
+    }
+
+    public void saveEventHall(EventHall eventHall) {
+        FirebaseFirestore.getInstance()
+                .collection(Constants.USERS_COLLECTION)
+                .document(this.ownerID)
+                .collection(Constants.EVENT_HALL_COLLECTION)
+                .get()
+                .addOnSuccessListener(task -> {
+                    if (task.getDocuments().size() > 0) {
+                        task.forEach(snapshot -> saveData(eventHall, Constants.EVENT_HALL_COLLECTION, snapshot.getId()));
+                    } else {
+                        saveData(eventHall, Constants.EVENT_HALL_COLLECTION, null);
+                    }
+                    setEventHall(eventHall);
+                });
+    }
+
+    private <T> void saveData(T data, String collection, String id) {
+        if (id != null && !id.isEmpty()) {
+            FirebaseFirestore.getInstance()
+                    .collection(Constants.USERS_COLLECTION)
+                    .document(this.ownerID)
+                    .collection(collection)
+                    .document(id)
+                    .set(data);
+        } else {
+            FirebaseFirestore.getInstance()
+                    .collection(Constants.USERS_COLLECTION)
+                    .document(this.ownerID)
+                    .collection(collection)
+                    .document()
+                    .set(data);
+        }
+    }
+
+    public DateAndTime getEventDateAndTime() {
+        return eventDateAndTime;
+    }
+
+    public void setEventDateAndTime(DateAndTime eventDateAndTime) {
+        this.eventDateAndTime = eventDateAndTime;
+    }
+
+    public void saveEventDateAndTime(DateAndTime eventDateAndTime) {
+        FirebaseFirestore.getInstance()
+                .collection(Constants.USERS_COLLECTION)
+                .document(this.ownerID)
+                .collection(Constants.DATE_AND_TIME_COLLECTION)
+                .get()
+                .addOnSuccessListener(task -> {
+                    if (task.getDocuments().size() > 0) {
+                        task.forEach(snapshot -> saveData(eventDateAndTime, Constants.DATE_AND_TIME_COLLECTION, snapshot.getId()));
+                    } else {
+                        saveData(eventDateAndTime, Constants.DATE_AND_TIME_COLLECTION, null);
+                    }
+                    setEventDateAndTime(eventDateAndTime);
+                });
+    }
+
 
     public void setRotateLoading(RotateLoading rotateLoading) {
         this.rotateLoading = rotateLoading;
